@@ -93,6 +93,7 @@ fig2.update_layout(
 
 fig2.update_layout(mapbox_style="dark", mapbox_accesstoken="pk.eyJ1IjoibWluaHRyYW4yMSIsImEiOiJja2dlNG53YmYwZHhqMnJsN2tpNHUwZXR1In0.VOD0SAfL2ZQgAtZ0W6Vg0g")
 
+FONT_AWESOME = "https://use.fontawesome.com/releases/v5.7.2/css/all.css"
 
 # Load data
 df = pd.read_csv('data/stockdata2.csv', index_col=0, parse_dates=True)
@@ -104,7 +105,7 @@ def get_options(list_stocks):
         dict_list.append({'label': i, 'value': i})
     return dict_list
 # Initialize the app
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, FONT_AWESOME])
 server = app.server
 app.layout = html.Div(
     children=[

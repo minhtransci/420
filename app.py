@@ -1,10 +1,20 @@
 import dash
+import base64
+import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash_core_components as dcc
-import plotly.graph_objects as go
+#import plotly.graph_objects as go
 import pandas as pd
+#import numpy as np
 import plotly.express as px
 from dash.dependencies import Input, Output
+import plotly.graph_objects as go
+import random
+#import dash_daq as daq
+from datetime import datetime
+from plotly.subplots import make_subplots
+import datetime
+import requests
 
 # Load data
 df = pd.read_csv('data/stockdata2.csv', index_col=0, parse_dates=True)

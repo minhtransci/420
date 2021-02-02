@@ -18,6 +18,36 @@ import datetime
 import requests
 
 # Load data
+cc = pd.read_csv('data/cumulative_cases.csv', skiprows=3)
+cd = pd.read_csv('data/cumulative_deaths.csv', skiprows=3)
+rc = pd.read_csv('data/sevenday_rolling_average_of_new_cases.csv', skiprows=3)
+rd = pd.read_csv('data/sevenday_rolling_average_of_new_deaths.csv', skiprows=3)
+
+stateDictionary = {}
+
+dataVal = [cc, cd, rc, rd]
+
+aTime = 67
+
+random_xPie = [100, 2000, 550]
+namesPie = ['A', 'B', 'C']
+
+figPie = px.pie(values=random_xPie, names=namesPie)
+
+labels = ["Male", "Female"]
+
+fig3 = make_subplots(1, 2, specs=[[{"type": "xy"}, {'type':'domain'} ]])
+
+fig3.add_trace(go.Bar(y=[2, 3, 1]),
+              row=1, col=1)
+fig3.add_trace(go.Pie(labels=labels, values=[48,52], scalegroup='one'), 1, 2)
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=rd['Day'], y=rd['TX'], mode='lines', name='TX', ))
+fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+fig.update_layout(xaxis_title="Days", yaxis_title='Count', title="States Count Over Time", legend_title="States")
+
+# Load data
 df = pd.read_csv('data/stockdata2.csv', index_col=0, parse_dates=True)
 df.index = pd.to_datetime(df['Date'])
 # Creates a list of dictionaries, which have the keys 'label' and 'value'.

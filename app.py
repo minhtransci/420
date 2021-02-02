@@ -111,7 +111,7 @@ def get_options(list_stocks):
     return dict_list
 
 # Initialize the app
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, FONT_AWESOME])
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
 

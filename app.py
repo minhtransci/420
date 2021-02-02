@@ -99,6 +99,8 @@ encoded_image = base64.b64encode(open(image_filename, 'rb').read())
 FONT_AWESOME = "https://use.fontawesome.com/releases/v5.7.2/css/all.css"
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, FONT_AWESOME])
+server = app.server
+app.title=tabtitle
 
 card_content = [
     dbc.CardHeader("Card header"),
@@ -925,5 +927,4 @@ def render_content(tab):
         )
 
 if __name__ == '__main__':
-    app.config['suppress_callback_exceptions'] = True
-    app.run_server(debug=True)
+    app.run_server()

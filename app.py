@@ -1,32 +1,34 @@
 import dash
+import base64
+import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash_core_components as dcc
 import plotly.graph_objects as go
+#import plotly.graph_objects as go
 import pandas as pd
+#import numpy as np
 import plotly.express as px
 from dash.dependencies import Input, Output
+import plotly.graph_objects as go
+import random
+#import dash_daq as daq
+from datetime import datetime
+from plotly.subplots import make_subplots
+import datetime
+import requests
 
 # Load data
 df = pd.read_csv('data/stockdata2.csv', index_col=0, parse_dates=True)
 df.index = pd.to_datetime(df['Date'])
-
 # Creates a list of dictionaries, which have the keys 'label' and 'value'.
 def get_options(list_stocks):
     dict_list = []
     for i in list_stocks:
         dict_list.append({'label': i, 'value': i})
-
     return dict_list
-
 # Initialize the app
-<<<<<<< HEAD
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-=======
 app = dash.Dash(__name__)
->>>>>>> parent of bf509c7... Update app.py
 server = app.server
-
-
 app.layout = html.Div(
     children=[
         html.Div(className='row',
@@ -58,9 +60,7 @@ app.layout = html.Div(
                              ])
                               ])
         ]
-
 )
-
 @app.callback(Output('timeseries', 'figure'),
               [Input('stockselector', 'value')])
 def update_timeseries(selected_dropdown_value):
@@ -94,11 +94,8 @@ def update_timeseries(selected_dropdown_value):
                   title={'text': 'Stock Prices', 'font': {'color': 'white'}, 'x': 0.5},
                   xaxis={'range': [df_sub.index.min(), df_sub.index.max()]},
               ),
-
               }
-
     return figure
-
 @app.callback(Output('change', 'figure'),
               [Input('stockselector', 'value')])
 def update_change(selected_dropdown_value):
@@ -130,10 +127,6 @@ def update_change(selected_dropdown_value):
                   xaxis={'showticklabels': False, 'range': [df_sub.index.min(), df_sub.index.max()]},
               ),
               }
-
     return figure
-
-
-
 if __name__ == '__main__':
     app.run_server(debug=True)

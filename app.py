@@ -93,8 +93,6 @@ fig2.update_layout(
 
 fig2.update_layout(mapbox_style="dark", mapbox_accesstoken="pk.eyJ1IjoibWluaHRyYW4yMSIsImEiOiJja2dlNG53YmYwZHhqMnJsN2tpNHUwZXR1In0.VOD0SAfL2ZQgAtZ0W6Vg0g")
 
-FONT_AWESOME = "https://use.fontawesome.com/releases/v5.7.2/css/all.css"
-
 # Load data
 df = pd.read_csv('data/stockdata2.csv', index_col=0, parse_dates=True)
 df.index = pd.to_datetime(df['Date'])
@@ -105,10 +103,8 @@ def get_options(list_stocks):
         dict_list.append({'label': i, 'value': i})
     return dict_list
 # Initialize the app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, FONT_AWESOME])
+app = dash.Dash(__name__)
 server = app.server
-
-
 card_content = [
     dbc.CardHeader("Card header"),
     dbc.CardBody(
@@ -132,6 +128,163 @@ app.layout = html.Div([
     ], ),
     html.Div(id='tabs-content-inline')
 ])
+
+
+def randomNum():
+    random.seed(datetime.now())
+    retVal = random.randint(0, 10000000000)
+    return retVal
+
+@app.callback(Output('timeseries', 'figure'),
+              [Input('stateSelector', 'value'),
+               Input('plotSelector', 'value')])
+def update_timeseries(selected_dropdown_value, selected_plot_value):
+    selectedData = dataVal[selected_plot_value]
+
+    fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
+    fig.update_layout(xaxis_title="Days", yaxis_title='Count', title="States Count Over Time", legend_title="States")
+    print("Update state", selected_dropdown_value)
+    print("Update plot", selected_plot_value)
+    if len(selected_dropdown_value) > 0:
+        for i in range(len(selected_dropdown_value)):
+            stateVal = selected_dropdown_value[i]
+            fig.add_trace(go.Scatter(x=selectedData['Day'], y=selectedData[stateVal], mode='lines', name=stateVal))
+    else:
+        fig.add_trace(go.Scatter(x=selectedData['Day'], y=selectedData['TX'], mode='lines', name='TX'))
+    fig.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    return fig
+
+@app.callback(Output('tabs-content-inline', 'children'),
+              [Input('tabs-styled-with-inline', 'value')])
+def render_content(tab):
+    if tab == 'tab-1':
+        return html.Div(
+            children=[
+                html.Div(className='row',
+                         children=[
+                             html.Div(className='four columns div-user-controls',
+                                      children=[
+                                          html.Img(
+                                              className="logo", src=app.get_asset_url("dash-logo-new.png")
+                                          ),
+                                          html.H2('Dash - Covid Template'),
+                                          html.Div(className='div-for-dropdown',
+                                                   children=[
+                                                       dcc.Dropdown(
+                                                           id='plotSelector',
+                                                           options=[
+                                                               {'label': 'Cumulative Cases', 'value': 0},
+                                                               {'label': 'Cumulative Deaths', 'value': 1},
+                                                               {'label': '7-Day Rolling Cases', 'value': 2},
+                                                               {'label': '7-Day Rolling Deaths', 'value': 3}
+                                                           ],
+                                                           value=3,
+                                                           searchable=False,
+                                                           clearable=False,
+                                                           className='fuck'
+                                                       )
+                                                   ]),
+                                          html.P('''Visualising time series with Plotly - Dash'''),
+                                          html.P('''Pick one or more states from the dropdown below.'''),
+                                          html.Div(className='div-for-dropdown',
+                                                   children=[
+                                                       dcc.Dropdown(
+                                                           id='stateSelector',
+                                                           options=[
+                                                               {'label': 'California', 'value': 'CA'},
+                                                               {'label': 'Florida', 'value': 'FL'},
+                                                               {'label': 'Illionis', 'value': 'IL'},
+                                                               {'label': 'North Carolina', 'value': 'NC'},
+                                                               {'label': 'Texas', 'value': 'TX'},
+                                                               {'label': 'Wisconsin', 'value': 'WI'}
+                                                           ],
+                                                           value=['TX'],
+                                                           multi=True,
+                                                           clearable=False,
+                                                           className='stateSelector'
+                                                       ),
+                                                   ],
+                                                   style={'color': '#1E1E1E'}),
+                                          dbc.Col(html.Div([
+                                              dbc.Card(dbc.CardBody(
+                                                  [
+                                                      dbc.CardLink("Get Tested Now",
+                                                                   href="https://publichealth.harriscountytx.gov/Resources/2019-Novel-Coronavirus/COVID-19-Testing-Information"),
+                                                  ]
+                                              ), color="dark", inverse=True, body=True),
+                                          ])),
+                                      ]
+                                      ),
+                             html.Div(className='eight columns div-for-charts bg-grey',
+                                      children=[
+                                          dbc.Row(
+                                              [
+                                                  dbc.Col(dbc.Card(
+                                                      [
+                                                          dbc.CardHeader(
+                                                              [
+                                                                  html.H5("United States")
+                                                              ]
+                                                          ),
+                                                          dbc.CardBody(
+                                                              [
+                                                                  html.I(className="fas fa-notes-medical"),
+                                                                  html.H5("Current Infections", className="card-title"),
+                                                                  html.H5(
+                                                                      "123,456,789",
+                                                                      className="card-title",
+                                                                  ),
+                                                              ]
+                                                          ),
+                                                      ], color="warning", inverse=True)),
+                                                  dbc.Col(dbc.Card(
+                                                      [
+                                                          dbc.CardHeader(
+                                                              [
+                                                                  html.H5("United States")
+                                                              ]
+                                                          ),
+                                                          dbc.CardBody(
+                                                              [
+                                                                  html.I(className="fas fa-heart-broken"),
+                                                                  html.H5("Deaths", className="card-title"),
+                                                                  html.H5(
+                                                                      "123,456,789",
+                                                                      className="card-title",
+                                                                  ),
+                                                              ]
+                                                          ),
+                                                      ], color="danger", inverse=True)),
+                                                  dbc.Col(dbc.Card(
+                                                      [
+                                                          dbc.CardHeader(
+                                                              [
+                                                                  html.H5("United States")
+                                                              ]
+                                                          ),
+                                                          dbc.CardBody(
+                                                              [
+                                                                  html.I(className="fas fa-heart"),
+                                                                  html.H5("Recovered", className="card-title"),
+                                                                  html.H5(
+                                                                      "123,456,789",
+                                                                      className="card-title",
+                                                                  ),
+                                                              ]
+                                                          ),
+                                                      ], color="success", inverse=True)),
+                                              ],
+                                              className="mb-4", justify="center", align="center"
+                                          ),
+                                          dcc.Graph(id='timeseries',
+                                                    config={'displayModeBar': False},
+                                                    figure=fig
+                                                    ),
+                                      ], style={'text-align': 'center'})
+                         ])
+            ]
+        )
+
 
 
 if __name__ == '__main__':

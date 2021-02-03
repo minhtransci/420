@@ -257,6 +257,145 @@ def update_statePlot(state_value, type_value):
     print(datetime.datetime.now() - a)
     return fig6
 
+@app.callback(Output('MultiPlots', 'children'),
+              [Input('stateMultiPick', 'value')])
+def MultiStepPlot(state):
+    fig11 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    fig11.update_layout(xaxis_title="Days", yaxis_title='Count', title=state + '-positive')
+    fig12 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    fig12.update_layout(xaxis_title="Days", yaxis_title='Count', title=state + '-positiveIncrease')
+    fig13 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    fig13.update_layout(xaxis_title="Days", yaxis_title='Count', title=state + '-death')
+    fig14 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    fig14.update_layout(xaxis_title="Days", yaxis_title='Count', title=state + '-deathIncrease')
+    fig15 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    fig15.update_layout(xaxis_title="Days", yaxis_title='Count', title=state + '-hospitalizedCurrently')
+    a = datetime.datetime.now()
+    if state not in stateDictionary:
+        a = datetime.datetime.now()
+        if state != 'us':
+            r = requests.get('https://api.covidtracking.com/v1/states/'+state+'/daily.json')
+        else:
+            r = requests.get('https://api.covidtracking.com/v1/us/daily.json')
+        date = []
+        numbers1 = []
+        numbers2 = []
+        numbers3 = []
+        numbers4 = []
+        numbers5 = []
+        b = r.json()
+        for days in range(len(b)-1, -1, -1):
+            f = str(b[days]['date'])
+            date.append(f[0:4] + '-' + f[4:6] + '-' + f[6:8])
+            numbers1.append(b[days]['positive'])
+            numbers2.append(b[days]['positiveIncrease'])
+            numbers3.append(b[days]['hospitalizedCurrently'])
+            numbers4.append(b[days]['death'])
+            numbers5.append(b[days]['deathIncrease'])
+
+        stateDictionary[state] = date
+        stateDictionary[state+'-positive'] = numbers1
+        stateDictionary[state + '-positiveIncrease'] = numbers2
+        stateDictionary[state + '-hospitalizedCurrently'] = numbers3
+        stateDictionary[state + '-death'] = numbers4
+        stateDictionary[state+ '-deathIncrease'] = numbers5
+
+    new1List = stateDictionary[state + '-positiveIncrease']
+    new2List = stateDictionary[state + '-deathIncrease']
+
+    mva1 = [0] * 7
+    mva2 = [0] * 7
+    var1 = 0
+    var2 = 0
+    for day in range(0,7):
+        var1 = var1 + new1List[day]
+        var2 = var2 + new2List[day]
+    for day in range(7,len(stateDictionary[state])):
+        mva1.append(var1/7.0)
+        mva2.append(var2/7.0)
+        var1 = var1 + new1List[day]
+        var2 = var2 + new2List[day]
+        var1 = var1 - new1List[day - 7]
+        var2 = var2 - new2List[day - 7]
+
+    fig11.add_trace(go.Scatter(x=stateDictionary[state], y=stateDictionary[state + '-positive'], mode='lines', name=state))
+    fig11.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    fig12.add_trace(go.Bar(x=stateDictionary[state], y=stateDictionary[state + '-positiveIncrease']))
+    fig12.add_trace(go.Scatter(x=stateDictionary[state], y=mva1))
+    fig12.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    fig13.add_trace(go.Scatter(x=stateDictionary[state], y=stateDictionary[state + '-death'], mode='lines', name=state))
+    fig13.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    fig14.add_trace(go.Bar(x=stateDictionary[state], y=stateDictionary[state + '-deathIncrease']))
+    fig14.add_trace(go.Scatter(x=stateDictionary[state], y=mva2))
+    fig14.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    fig15.add_trace(go.Bar(x=stateDictionary[state], y=stateDictionary[state + '-hospitalizedCurrently']))
+    fig15.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    fig12.update_layout(
+        updatemenus=[go.layout.Updatemenu(
+            type="buttons",
+            active=1,
+            buttons=list(
+                [dict(label='None',
+                      method='update',
+                      args=[{'visible': [True, False]},
+                            {'title': 'None',
+                             'showlegend': True}]),
+                 dict(label='LineDaily',
+                      method='update',
+                      args=[{'visible': [True, True]},
+                            # the index of True aligns with the indices of plot traces
+                            {'title': 'LineDaily',
+                             'showlegend': True}]),
+                 ])
+        )
+        ])
+    fig14.update_layout(
+        updatemenus=[go.layout.Updatemenu(
+            type="buttons",
+            active=1,
+            buttons=list(
+                [dict(label='None',
+                      method='update',
+                      args=[{'visible': [True, False]},
+                            {'title': 'None',
+                             'showlegend': True}]),
+                 dict(label='LineDaily',
+                      method='update',
+                      args=[{'visible': [True, True]},
+                            # the index of True aligns with the indices of plot traces
+                            {'title': 'LineDaily',
+                             'showlegend': True}]),
+                 ])
+        )
+        ])
+    print('TimeA', datetime.datetime.now() - a)
+    return html.Div(
+        children=[
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=fig11
+                      ),
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=fig12
+                      ),
+
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=fig13
+                      ),
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=fig14
+                      ),
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=fig15
+                      ),
+
+    ]
+    )
+
 @app.callback(Output('tabs-content-inline', 'children'),
               [Input('tabs-styled-with-inline', 'value')])
 def render_content(tab):
@@ -611,6 +750,154 @@ def render_content(tab):
                                                         )
                                                      ])
                                       ])
+                         ])
+            ]
+        )
+    elif tab == 'tab-5':
+        return html.Div(
+            children=[
+                html.Div(className='row',
+                         children=[
+                             html.Div(className='four columns div-user-controls',
+                                      children=[
+                                          html.Img(
+                                              className="logo", src=app.get_asset_url("dash-logo-new.png")
+                                          ),
+                                          html.H2('Dash - State Covid Data'),
+                                          html.P('''Pick a state'''),
+                                          html.Div(className='div-for-dropdown',
+                                                   children=[
+                                                       dcc.Dropdown(
+                                                           id='stateMultiPick',
+                                                           options=[
+                                                               {'label': 'National', 'value': 'us'},
+                                                               {'label': 'Alabama', 'value': 'al'},
+                                                               {'label': 'Alaska', 'value': 'ak'},
+                                                               {'label': 'Arizona', 'value': 'az'},
+                                                               {'label': 'Arkansas', 'value': 'ar'},
+                                                               {'label': 'California', 'value': 'ca'},
+                                                               {'label': 'Colorado', 'value': 'co'},
+                                                               {'label': 'Connecticut', 'value': 'ct'},
+                                                               {'label': 'Delaware', 'value': 'de'},
+                                                               {'label': 'Florida', 'value': 'fl'},
+                                                               {'label': 'Georgia', 'value': 'ga'},
+                                                               {'label': 'Hawaii', 'value': 'hi'},
+                                                               {'label': 'Idaho', 'value': 'id'},
+                                                               {'label': 'Illinois', 'value': 'il'},
+                                                               {'label': 'Indiana', 'value': 'in'},
+                                                               {'label': 'Iowa', 'value': 'ia'},
+                                                               {'label': 'Kansas', 'value': 'ks'},
+                                                               {'label': 'Kentucky', 'value': 'ky'},
+                                                               {'label': 'Louisiana', 'value': 'la'},
+                                                               {'label': 'Maine', 'value': 'me'},
+                                                               {'label': 'Maryland', 'value': 'md'},
+                                                               {'label': 'Massachusetts', 'value': 'ma'},
+                                                               {'label': 'Michigan', 'value': 'mi'},
+                                                               {'label': 'Minnesota', 'value': 'mn'},
+                                                               {'label': 'Mississippi', 'value': 'ms'},
+                                                               {'label': 'Missouri', 'value': 'mo'},
+                                                               {'label': 'Montana', 'value': 'mt'},
+                                                               {'label': 'Nebraska', 'value': 'ne'},
+                                                               {'label': 'Nevada', 'value': 'nv'},
+                                                               {'label': 'New Hampshire', 'value': 'nh'},
+                                                               {'label': 'New Jersey', 'value': 'nj'},
+                                                               {'label': 'New Mexico', 'value': 'nm'},
+                                                               {'label': 'New York', 'value': 'ny'},
+                                                               {'label': 'North Carolina', 'value': 'nc'},
+                                                               {'label': 'North Dakota', 'value': 'nd'},
+                                                               {'label': 'Ohio', 'value': 'oh'},
+                                                               {'label': 'Oklahoma', 'value': 'ok'},
+                                                               {'label': 'Oregon', 'value': 'or'},
+                                                               {'label': 'Pennsylvania', 'value': 'pa'},
+                                                               {'label': 'Rhode Island', 'value': 'ri'},
+                                                               {'label': 'South Carolina', 'value': 'sc'},
+                                                               {'label': 'South Dakota', 'value': 'sd'},
+                                                               {'label': 'Tennessee', 'value': 'tn'},
+                                                               {'label': 'Texas', 'value': 'tx'},
+                                                               {'label': 'Utah', 'value': 'ut'},
+                                                               {'label': 'Vermont', 'value': 'vt'},
+                                                               {'label': 'Virginia', 'value': 'va'},
+                                                               {'label': 'Washington', 'value': 'wa'},
+                                                               {'label': 'West Virginia', 'value': 'wv'},
+                                                               {'label': 'Wisconsin', 'value': 'wi'},
+                                                               {'label': 'Wyoming', 'value': 'wy'},
+                                                           ],
+                                                           value='us',
+                                                           searchable=False,
+                                                           className='fuck'
+                                                       )
+                                                   ]),
+                                          html.P('''Visualising time series with Plotly - Dash'''),
+                                          html.P('''Pick one or more states from the dropdown below.'''),
+                                      ]
+                                      ),
+
+                             html.Div(className='eight columns div-for-charts bg-grey',
+                                      children=[
+                                          dbc.Row(
+                                              [
+                                                  dbc.Col(dbc.Card(
+                                                      [
+                                                          dbc.CardHeader(
+                                                              [
+                                                                  html.H5("United States")
+                                                              ]
+                                                          ),
+                                                          dbc.CardBody(
+                                                              [
+                                                                  html.I(className="fas fa-notes-medical"),
+                                                                  html.H5("Current Infections", className="card-title"),
+                                                                  html.H5(
+                                                                      "123,456,789",
+                                                                      className="card-title",
+                                                                  ),
+                                                              ]
+                                                          ),
+                                                      ], color="warning", inverse=True)),
+                                                  dbc.Col(dbc.Card(
+                                                      [
+                                                          dbc.CardHeader(
+                                                              [
+                                                                  html.H5("United States")
+                                                              ]
+                                                          ),
+                                                          dbc.CardBody(
+                                                              [
+                                                                  html.I(className="fas fa-heart-broken"),
+                                                                  html.H5("Deaths", className="card-title"),
+                                                                  html.H5(
+                                                                      "123,456,789",
+                                                                      className="card-title",
+                                                                  ),
+                                                              ]
+                                                          ),
+                                                      ], color="danger", inverse=True)),
+                                                  dbc.Col(dbc.Card(
+                                                      [
+                                                          dbc.CardHeader(
+                                                              [
+                                                                  html.H5("United States")
+                                                              ]
+                                                          ),
+                                                          dbc.CardBody(
+                                                              [
+                                                                  html.I(className="fas fa-heart"),
+                                                                  html.H5("Recovered", className="card-title"),
+                                                                  html.H5(
+                                                                      "123,456,789",
+                                                                      className="card-title",
+                                                                  ),
+                                                              ]
+                                                          ),
+                                                      ], color="success", inverse=True)),
+                                              ],
+                                              className="mb-4", justify="center", align="center", style={'text-align': 'center'}
+                                          ),
+                                          dcc.Loading(
+                                          html.Div(id='MultiPlots',
+                                                   )
+                                          )
+                                            ])
                          ])
             ]
         )

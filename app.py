@@ -177,44 +177,6 @@ def update_timeseries(selected_dropdown_value, selected_plot_value):
     fig.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     return fig
 
-@app.callback(Output('pieGraph', 'figure'),
-              [Input('pieSelector1', 'value'),
-               Input('pieSelector2', 'value')])
-def update_pieGraph(selected_pie1_value, selected_pie2_value):
-    random.seed(selected_pie1_value + selected_pie2_value)
-    a = random.randint(50, 100)
-    b = random.randint(75, 125)
-    c = random.randint(25, 75)
-    random_xPie = [a, b, c]
-    namesPie = ['Random Positive', 'Random Negative', 'Random Neutral']
-
-    figPie = px.pie(values=random_xPie, names=namesPie)
-    return figPie
-
-@app.callback(Output('timeTweet', 'figure'),
-              [Input('pieSelector1', 'value'),
-               Input('pieSelector2', 'value')])
-def update_timeTweet(selected_pie1_value, selected_pie2_value):
-    random.seed(selected_pie1_value + selected_pie2_value)
-    x = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
-    random.seed(selected_pie1_value + selected_pie2_value)
-    aList = []
-    bList = []
-    cList = []
-    fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
-    fig.update_layout(xaxis_title="Days", yaxis_title='Percentage', title="Tweet", legend_title="Reaction")
-    for i in range(len(x)):
-        a = random.randint(30, 40)
-        b = random.randint(40, 50)
-        c = 100 - a - b
-        aList.append(a/100.0)
-        bList.append(b/100.0)
-        cList.append(c/100.0)
-    fig.add_trace(go.Scatter(x=x, y=aList, mode='lines', name='Positive'))
-    fig.add_trace(go.Scatter(x=x, y=bList, mode='lines', name='Negative'))
-    fig.add_trace(go.Scatter(x=x, y=cList, mode='lines', name='Neutral'))
-    return fig
-
 @app.callback(Output('tabs-content-inline', 'children'),
               [Input('tabs-styled-with-inline', 'value')])
 def render_content(tab):
@@ -397,68 +359,6 @@ def render_content(tab):
                                               id='example-graph-2',
                                               figure=fig4
                                           ),
-                                      ])
-                         ])
-            ]
-        )
-
-    elif tab == 'tab-3':
-        return html.Div(
-            children=[
-                html.Div(className='row',
-                         children=[
-                             html.Div(className='four columns div-user-controls',
-                                      children=[
-                                          html.Img(
-                                              className="logo", src=app.get_asset_url("dash-logo-new.png")
-                                          ),
-                                          html.H2('Dash - Twitter Covid Sentiment'),
-                                          html.P('''Pick a subject'''),
-                                          html.Div(className='div-for-dropdown',
-                                                   children=[
-                                                       dcc.Dropdown(
-                                                           id='pieSelector1',
-                                                           options=[
-                                                               {'label': 'Covid', 'value': 0},
-                                                               {'label': 'Trump', 'value': 1},
-                                                               {'label': 'Whitmer', 'value': 2},
-                                                               {'label': 'Fauci', 'value': 3},
-                                                               {'label': 'Moderna', 'value': 4},
-                                                               {'label': 'Schools', 'value': 5},
-                                                           ],
-                                                           value=0,
-                                                           searchable=False,
-                                                           clearable=False,
-                                                           className='pieSelect1'
-                                                       )
-                                                   ]),
-                                          html.P('''Pick a measurement'''),
-                                          html.Div(className='div-for-dropdown',
-                                                   children=[
-                                                       dcc.Dropdown(
-                                                           id='pieSelector2',
-                                                           options=[
-                                                               {'label': 'Tweets', 'value': 0},
-                                                               {'label': 'Engagement', 'value': 1},
-                                                           ],
-                                                           value=0,
-                                                           searchable=False,
-                                                           clearable=False,
-                                                           className='pieSelect2'
-                                                       )
-                                                   ]),
-                                      ]
-                                      ),
-                             html.Div(className='eight columns div-for-charts bg-grey',
-                                      children=[
-                                          dcc.Graph(id='pieGraph',
-                                                    config={'displayModeBar': False},
-                                                    figure=figPie
-                                                    ),
-                                          dcc.Graph(id='timeTweet',
-                                                    config={'displayModeBar': False},
-                                                    figure=fig
-                                                    ),
                                       ])
                          ])
             ]

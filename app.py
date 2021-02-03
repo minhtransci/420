@@ -128,12 +128,35 @@ app.layout = html.Div([
     ], ),
     html.Div(id='tabs-content-inline')
 ])
-
+dictCity = {}
+for i in range(len(latCity)):
+    dictCity[cityName[i]] = [(latCity[i], lonCity[i])]
 
 def randomNum():
     random.seed(datetime.now())
     retVal = random.randint(0, 10000000000)
     return retVal
+
+@app.callback(Output('darkMap', 'figure'),
+              Input('citySelector', 'value'))
+def update_map(val):
+    if(val == 999):
+        return fig2
+    fig2.update_layout(
+        hovermode='closest',
+        mapbox=dict(
+            accesstoken="pk.eyJ1IjoibWluaHRyYW4yMSIsImEiOiJja2dlNG53YmYwZHhqMnJsN2tpNHUwZXR1In0.VOD0SAfL2ZQgAtZ0W6Vg0g",
+            center=dict(
+                lat=float(latCity[val]),
+                lon=float(lonCity[val]),
+            ),
+            pitch=0,
+            zoom=8,
+        )
+    )
+    zoomVal = fig2['layout']['mapbox']['zoom']
+    print(zoomVal)
+    return fig2
 
 @app.callback(Output('timeseries', 'figure'),
               [Input('stateSelector', 'value'),
@@ -281,6 +304,62 @@ def render_content(tab):
                                                     figure=fig
                                                     ),
                                       ], style={'text-align': 'center'})
+                         ])
+            ]
+        )
+    elif tab == 'tab-2':
+        return html.Div(
+            children=[
+                html.Div(className='row',
+                         children=[
+                             html.Div(className='four columns div-user-controls',
+                                      children=[
+                                          html.Img(
+                                              className="logo", src=app.get_asset_url("dash-logo-new.png")
+                                          ),
+                                          html.H2('Dash - Covid Map'),
+                                          html.P('''Move around the map and select a city'''),
+                                          html.P('''Pick a city below'''),
+                                          html.Div(className='div-for-dropdown',
+                                                   children=[
+                                                       dcc.Dropdown(
+                                                           id='stateSelector2',
+                                                           options=[
+                                                               {'label': 'Texas', 'value': 'TX'},
+                                                               {'label': 'California', 'value': 'CA'},
+                                                           ],
+                                                           value='TX',
+                                                           searchable=False,
+                                                           clearable=False,
+                                                           className='fuck'
+                                                       ),
+                                                       dcc.Dropdown(
+                                                           id='citySelector',
+                                                           options=[
+                                                               {'label': 'Dallas', 'value': 0},
+                                                               {'label': 'Austin', 'value': 1},
+                                                               {'label': 'Houston', 'value': 2},
+                                                               {'label': 'San Antonio', 'value': 3}
+                                                           ],
+                                                           value=999,
+                                                           searchable=False,
+                                                           clearable=False,
+                                                           className='fuck'
+                                                       )
+                                                   ]),
+                                      ]
+                                      ),
+                             html.Div(className='eight columns div-for-charts bg-grey',
+                                      children=[
+                                          dcc.Graph(id='darkMap',
+                                                    config={'displayModeBar': False},
+                                                    figure=fig2
+                                                    ),
+                                          dcc.Graph(
+                                              id='example-graph-2',
+                                              figure=fig4
+                                          ),
+                                      ])
                          ])
             ]
         )

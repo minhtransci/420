@@ -103,7 +103,8 @@ def get_options(list_stocks):
         dict_list.append({'label': i, 'value': i})
     return dict_list
 # Initialize the app
-app = dash.Dash(__name__)
+FONT_AWESOME = "https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, FONT_AWESOME])
 server = app.server
 card_content = [
     dbc.CardHeader("Card header"),

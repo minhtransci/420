@@ -376,7 +376,10 @@ def MultiStepPlot(state):
                       config={'displayModeBar': False},
                       figure=fig11
                       ),
-
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=fig12
+                      ),
     ]
     )
 

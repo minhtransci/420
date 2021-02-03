@@ -215,6 +215,48 @@ def update_timeTweet(selected_pie1_value, selected_pie2_value):
     fig.add_trace(go.Scatter(x=x, y=cList, mode='lines', name='Neutral'))
     return fig
 
+@app.callback(Output('statePlot', 'figure'),
+              [Input('StatePick', 'value'),
+               Input('PlotPick', 'value')])
+def update_statePlot(state_value, type_value):
+    global aTime
+    a = datetime.datetime.now()
+    fig6 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    fig6.update_layout(xaxis_title="Days", yaxis_title='Count', title=type_value, legend_title="States")
+    for j in range(len(state_value)):
+        if state_value[j] not in stateDictionary:
+            if state_value[j] != 'us':
+                r = requests.get('https://api.covidtracking.com/v1/states/'+state_value[j]+'/daily.json')
+            else:
+                r = requests.get('https://api.covidtracking.com/v1/us/daily.json')
+            date = []
+            numbers1 = []
+            numbers2 = []
+            numbers3 = []
+            numbers4 = []
+            numbers5 = []
+            b = r.json()
+            for days in range(len(b)-1, -1, -1):
+                f = str(b[days]['date'])
+                date.append(f[0:4] + '-' + f[4:6] + '-' + f[6:8])
+                numbers1.append(b[days]['positive'])
+                numbers2.append(b[days]['positiveIncrease'])
+                numbers3.append(b[days]['hospitalizedCurrently'])
+                numbers4.append(b[days]['death'])
+                numbers5.append(b[days]['deathIncrease'])
+
+            stateDictionary[state_value[j]] = date
+            stateDictionary[state_value[j]+'-positive'] = numbers1
+            stateDictionary[state_value[j] + '-positiveIncrease'] = numbers2
+            stateDictionary[state_value[j] + '-hospitalizedCurrently'] = numbers3
+            stateDictionary[state_value[j] + '-death'] = numbers4
+            stateDictionary[state_value[j] + '-deathIncrease'] = numbers5
+
+        fig6.add_trace(go.Scatter(x=stateDictionary[state_value[j]], y=stateDictionary[state_value[j] + '-' + type_value], mode='lines', name=state_value[j]))
+    fig6.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    print(datetime.datetime.now() - a)
+    return fig6
+
 @app.callback(Output('tabs-content-inline', 'children'),
               [Input('tabs-styled-with-inline', 'value')])
 def render_content(tab):
@@ -459,6 +501,115 @@ def render_content(tab):
                                                     config={'displayModeBar': False},
                                                     figure=fig
                                                     ),
+                                      ])
+                         ])
+            ]
+        )
+    elif tab == 'tab-4':
+        return html.Div(
+            children=[
+                html.Div(className='row',
+                         children=[
+                             html.Div(className='four columns div-user-controls',
+                                      children=[
+                                          html.Img(
+                                              className="logo", src=app.get_asset_url("dash-logo-new.png")
+                                          ),
+                                          html.H2('Dash - Updated Covid Data'),
+                                          html.P('''Compare and Pick the States'''),
+                                          html.Div(className='div-for-dropdown',
+                                                   children=[
+                                                       dcc.Dropdown(
+                                                           id='StatePick',
+                                                           options=[
+                                                               {'label': 'National', 'value': 'us'},
+                                                               {'label': 'Alabama', 'value': 'al'},
+                                                               {'label': 'Alaska', 'value': 'ak'},
+                                                               {'label': 'Arizona', 'value': 'az'},
+                                                               {'label': 'Arkansas', 'value': 'ar'},
+                                                               {'label': 'California', 'value': 'ca'},
+                                                               {'label': 'Colorado', 'value': 'co'},
+                                                               {'label': 'Connecticut', 'value': 'ct'},
+                                                               {'label': 'Delaware', 'value': 'de'},
+                                                               {'label': 'Florida', 'value': 'fl'},
+                                                               {'label': 'Georgia', 'value': 'ga'},
+                                                               {'label': 'Hawaii', 'value': 'hi'},
+                                                               {'label': 'Idaho', 'value': 'id'},
+                                                               {'label': 'Illinois', 'value': 'il'},
+                                                               {'label': 'Indiana', 'value': 'in'},
+                                                               {'label': 'Iowa', 'value': 'ia'},
+                                                               {'label': 'Kansas', 'value': 'ks'},
+                                                               {'label': 'Kentucky', 'value': 'ky'},
+                                                               {'label': 'Louisiana', 'value': 'la'},
+                                                               {'label': 'Maine', 'value': 'me'},
+                                                               {'label': 'Maryland', 'value': 'md'},
+                                                               {'label': 'Massachusetts', 'value': 'ma'},
+                                                               {'label': 'Michigan', 'value': 'mi'},
+                                                               {'label': 'Minnesota', 'value': 'mn'},
+                                                               {'label': 'Mississippi', 'value': 'ms'},
+                                                               {'label': 'Missouri', 'value': 'mo'},
+                                                               {'label': 'Montana', 'value': 'mt'},
+                                                               {'label': 'Nebraska', 'value': 'ne'},
+                                                               {'label': 'Nevada', 'value': 'nv'},
+                                                               {'label': 'New Hampshire', 'value': 'nh'},
+                                                               {'label': 'New Jersey', 'value': 'nj'},
+                                                               {'label': 'New Mexico', 'value': 'nm'},
+                                                               {'label': 'New York', 'value': 'ny'},
+                                                               {'label': 'North Carolina', 'value': 'nc'},
+                                                               {'label': 'North Dakota', 'value': 'nd'},
+                                                               {'label': 'Ohio', 'value': 'oh'},
+                                                               {'label': 'Oklahoma', 'value': 'ok'},
+                                                               {'label': 'Oregon', 'value': 'or'},
+                                                               {'label': 'Pennsylvania', 'value': 'pa'},
+                                                               {'label': 'Rhode Island', 'value': 'ri'},
+                                                               {'label': 'South Carolina', 'value': 'sc'},
+                                                               {'label': 'South Dakota', 'value': 'sd'},
+                                                               {'label': 'Tennessee', 'value': 'tn'},
+                                                               {'label': 'Texas', 'value': 'tx'},
+                                                               {'label': 'Utah', 'value': 'ut'},
+                                                               {'label': 'Vermont', 'value': 'vt'},
+                                                               {'label': 'Virginia', 'value': 'va'},
+                                                               {'label': 'Washington', 'value': 'wa'},
+                                                               {'label': 'West Virginia', 'value': 'wv'},
+                                                               {'label': 'Wisconsin', 'value': 'wi'},
+                                                               {'label': 'Wyoming', 'value': 'wy'},
+                                                           ],
+                                                           value=['tx'],
+                                                           placeholder='Select a State',
+                                                           multi=True,
+                                                           searchable=True,
+                                                           className='fuck'
+                                                       )
+                                                   ]),
+                                          html.P('Covid Measurement Metrics to compare'),
+                                          html.Div(className='div-for-dropdown',
+                                                   children=[
+                                                       dcc.Dropdown(
+                                                           id='PlotPick',
+                                                           options=[
+                                                               {'label': 'Total Positive', 'value': 'positive'},
+                                                               {'label': 'Positive Increase', 'value': 'positiveIncrease'},
+                                                               {'label': 'Total Death', 'value': 'death'},
+                                                               {'label': 'Death Increase', 'value': 'deathIncrease'},
+                                                               {'label': 'Hospitalized Currently', 'value': 'hospitalizedCurrently'}
+                                                           ],
+                                                           value='positiveIncrease',
+                                                           searchable=False,
+                                                           clearable=False,
+                                                           className='fuck'
+                                                       )
+                                                   ],
+                                                   style={'color': '#1E1E1E'}),
+                                      ]
+                                      ),
+                             html.Div(className='eight columns div-for-charts bg-grey',
+                                      children=[
+                                          dcc.Loading(
+                                              children= [dcc.Graph(id='statePlot',
+                                                        config={'displayModeBar': False},
+                                                        figure=fig
+                                                        )
+                                                     ])
                                       ])
                          ])
             ]

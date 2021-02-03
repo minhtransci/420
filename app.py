@@ -449,6 +449,17 @@ def render_content(tab):
                                                    ]),
                                       ]
                                       ),
+                             html.Div(className='eight columns div-for-charts bg-grey',
+                                      children=[
+                                          dcc.Graph(id='pieGraph',
+                                                    config={'displayModeBar': False},
+                                                    figure=figPie
+                                                    ),
+                                          dcc.Graph(id='timeTweet',
+                                                    config={'displayModeBar': False},
+                                                    figure=fig
+                                                    ),
+                                      ])
                          ])
             ]
         )

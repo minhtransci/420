@@ -754,7 +754,7 @@ def render_content(tab):
                          ])
             ]
         )
-        elif tab == 'tab-5':
+    elif tab == 'tab-5':
         return html.Div(
             children=[
                 html.Div(className='row',
@@ -892,14 +892,13 @@ def render_content(tab):
                                                           ),
                                                       ], color="success", inverse=True)),
                                               ],
-                                              className="mb-4", justify="center", align="center",
-                                              style={'text-align': 'center'}
+                                              className="mb-4", justify="center", align="center", style={'text-align': 'center'}
                                           ),
                                           dcc.Loading(
-                                              html.Div(id='MultiPlots',
-                                                       )
+                                          html.Div(id='MultiPlots',
+                                                   )
                                           )
-                                      ])
+                                            ])
                          ])
             ]
         )

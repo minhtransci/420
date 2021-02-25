@@ -1,0 +1,3 @@
+CreateDate,polarity_average,polarity_daily_count,polarity_Positive_count,polarity_Negative_count,polarity_Neutral_count,polarity_positive_percent,polarity_negative_percent,polarity_neutral_percent,polarity_positive_fraction,polarity_negative_fraction,polarity_neutral_fraction
+2021-02-23,0.0412,1091665,84038,39093,968534,7.6981,3.5810,88.7208,0.0770,0.0358,0.8872
+2021-02-24,0.0089,116319,7818,6787,101714,6.7212,5.8348,87.4440,0.0672,0.0583,0.8744

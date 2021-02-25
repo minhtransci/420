@@ -22,6 +22,16 @@ cc = pd.read_csv('data/cumulative_cases.csv', skiprows=3)
 cd = pd.read_csv('data/cumulative_deaths.csv', skiprows=3)
 rc = pd.read_csv('data/sevenday_rolling_average_of_new_cases.csv', skiprows=3)
 rd = pd.read_csv('data/sevenday_rolling_average_of_new_deaths.csv', skiprows=3)
+covid_df = pd.read_csv('Covid_Val.csv')
+vax_df = pd.read_csv('Vaccine_Val.csv')
+
+covid_pos = covid_df["polarity_positive_percent"]
+covid_neg = covid_df["polarity_negative_percent"]
+covid_neu = covid_df["polarity_neutral_percent"]
+
+vax_pos = vax_df["polarity_positive_percent"]
+vax_neg = vax_df["polarity_negative_percent"]
+vax_neu = vax_df["polarity_neutral_percent"]
 
 stateDictionary = {}
 
@@ -182,12 +192,14 @@ def update_timeseries(selected_dropdown_value, selected_plot_value):
               [Input('pieSelector1', 'value'),
                Input('pieSelector2', 'value')])
 def update_pieGraph(selected_pie1_value, selected_pie2_value):
-    random.seed(selected_pie1_value + selected_pie2_value)
-    a = random.randint(50, 100)
-    b = random.randint(75, 125)
-    c = random.randint(25, 75)
-    random_xPie = [a, b, c]
-    namesPie = ['Random Positive', 'Random Negative', 'Random Neutral']
+    if (selected_pie1_value == 0):
+        a = covid_pos.iloc[-1]
+        b = covid_neg.iloc[-1]
+    else:
+        a = vax_pos.iloc[-1]
+        b = vax_neg.iloc[-1]
+    random_xPie = [a, b]
+    namesPie = ['Positive', 'Negative']
 
     figPie = px.pie(values=random_xPie, names=namesPie)
     return figPie
@@ -196,24 +208,15 @@ def update_pieGraph(selected_pie1_value, selected_pie2_value):
               [Input('pieSelector1', 'value'),
                Input('pieSelector2', 'value')])
 def update_timeTweet(selected_pie1_value, selected_pie2_value):
-    random.seed(selected_pie1_value + selected_pie2_value)
-    x = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
-    random.seed(selected_pie1_value + selected_pie2_value)
-    aList = []
-    bList = []
-    cList = []
     fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
     fig.update_layout(xaxis_title="Days", yaxis_title='Percentage', title="Tweet", legend_title="Reaction")
-    for i in range(len(x)):
-        a = random.randint(30, 40)
-        b = random.randint(40, 50)
-        c = 100 - a - b
-        aList.append(a/100.0)
-        bList.append(b/100.0)
-        cList.append(c/100.0)
-    fig.add_trace(go.Scatter(x=x, y=aList, mode='lines', name='Positive'))
-    fig.add_trace(go.Scatter(x=x, y=bList, mode='lines', name='Negative'))
-    fig.add_trace(go.Scatter(x=x, y=cList, mode='lines', name='Neutral'))
+    if(selected_pie1_value == 0):
+        fig.add_trace(go.Scatter(y=covid_pos, mode='lines', name='Positive'))
+        fig.add_trace(go.Scatter(y=covid_neg, mode='lines', name='Negative'))
+    else:
+        fig.add_trace(go.Scatter(y=vax_pos, mode='lines', name='Positive'))
+        fig.add_trace(go.Scatter(y=vax_neg, mode='lines', name='Negative'))
+    #fig.add_trace(go.Scatter(y=covid_neu, mode='lines', name='Neutral'))
     return fig
 
 @app.callback(Output('statePlot', 'figure'),
@@ -602,11 +605,7 @@ def render_content(tab):
                                                            id='pieSelector1',
                                                            options=[
                                                                {'label': 'Covid', 'value': 0},
-                                                               {'label': 'Trump', 'value': 1},
-                                                               {'label': 'Whitmer', 'value': 2},
-                                                               {'label': 'Fauci', 'value': 3},
-                                                               {'label': 'Moderna', 'value': 4},
-                                                               {'label': 'Schools', 'value': 5},
+                                                               {'label': 'Vaccine', 'value': 1}
                                                            ],
                                                            value=0,
                                                            searchable=False,
@@ -620,8 +619,7 @@ def render_content(tab):
                                                        dcc.Dropdown(
                                                            id='pieSelector2',
                                                            options=[
-                                                               {'label': 'Tweets', 'value': 0},
-                                                               {'label': 'Engagement', 'value': 1},
+                                                               {'label': 'Noramlization', 'value': 0},
                                                            ],
                                                            value=0,
                                                            searchable=False,
@@ -635,11 +633,9 @@ def render_content(tab):
                                       children=[
                                           dcc.Graph(id='pieGraph',
                                                     config={'displayModeBar': False},
-                                                    figure=figPie
                                                     ),
                                           dcc.Graph(id='timeTweet',
                                                     config={'displayModeBar': False},
-                                                    figure=fig
                                                     ),
                                       ])
                          ])

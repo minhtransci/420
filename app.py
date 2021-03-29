@@ -131,7 +131,7 @@ card_content = [
 ]
 
 app.layout = html.Div([
-    dcc.Tabs(id="tabs-styled-with-inline", value='tab-1', children=[
+    dcc.Tabs(id="tabs-styled-with-inline", value='tab-2', children=[
         dcc.Tab(label='Tab 1', value='tab-1'),
         dcc.Tab(label='Tab 2', value='tab-2'),
         dcc.Tab(label='Tab 3', value='tab-3'),

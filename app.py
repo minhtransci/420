@@ -389,6 +389,124 @@ def MultiStepPlot(state):
     ]
     )
 
+@app.callback(Output('MultiPredict', 'children'),
+              [Input('PredictPick', 'value'),])
+def update_predictPlot(predict_value):
+    global aTime
+    a = datetime.datetime.now()
+    figP = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    figC = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    figH = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+
+    mydb = mysql.connector.connect(
+        host='coviddata.cphvsbfyrgxg.us-east-2.rds.amazonaws.com', user='kriramz',
+        password='Star3003!!!!', database='simDB'
+    )
+
+    mycursor = mydb.cursor()
+
+    mycursor.execute("SELECT * FROM sim")
+
+    myresult = mycursor.fetchall()
+    xVals = []
+    yVals = []
+    yValsC = []
+    yValsH = []
+    yValsSum = 0
+    for x in myresult:
+        yValsSum = yValsSum + x[3]
+        xVals.append(x[0])
+        yVals.append(yValsSum)
+        yValsC.append(x[1])
+        yValsH.append(x[2])
+    figP.add_trace(
+        go.Scatter(x=xVals,y=yVals)
+    )
+    figC.add_trace(
+        go.Scatter(x=xVals,y=yValsC)
+    )
+    figH.add_trace(
+        go.Scatter(x=xVals,y=yValsH)
+    )
+    ###
+    state_value = ['AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA', 'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA',
+'MA', 'MD', 'ME', 'MI', 'MN', 'MO', 'MP', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM', 'NV', 'NY', 'OH', 'OK',
+'OR', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY']
+    stateDictionary = {}
+    for x in myresult:
+        for j in range(len(state_value)):
+            if state_value[j] not in stateDictionary:
+                if state_value[j] != 'us':
+                    r = requests.get('https://api.covidactnow.org/v2/state/' + state_value[
+                        j] + '.timeseries.json?apiKey=8e215af157c74e9fbf1d77e7e982e23d')
+                date = []
+                numbers1 = []
+                numbers2 = []
+                numbers3 = []
+                numbers4 = []
+                b = r.json()
+                c = b['actualsTimeseries']
+                for days in c:
+                    date.append(days['date'])
+                    numbers1.append(days['cases'])
+                    numbers2.append(days['newCases'])
+                    numbers3.append(days['deaths'])
+                    if 'vaccinationsInitiated' in days:
+                        numbers4.append(days['vaccinationsInitiated'])
+                    else:
+                        numbers4.append(None)
+                stateDictionary[state_value[j]] = date
+                stateDictionary[state_value[j] + '-cases'] = numbers1
+                stateDictionary[state_value[j] + '-newCases'] = numbers2
+                stateDictionary[state_value[j] + '-deaths'] = numbers3
+                stateDictionary[state_value[j] + '-vaccinationsInitiated'] = numbers4
+
+    dateDictionary = {}
+    for i in state_value:
+        for j in stateDictionary[i]:
+            if j not in dateDictionary:
+                dateDictionary[j] = 0
+
+    for i in state_value:
+        for j in range(len(stateDictionary[i])):
+            date = stateDictionary[i][j]
+            num = stateDictionary[i + '-deaths'][j]
+            if num == None:
+                num = 0
+            if date not in dateDictionary:
+                dateDictionary[date] = num
+            else:
+                dateDictionary[date] = dateDictionary[date] + num
+
+    xValTotal = []
+    yValTotal = []
+    for key in dateDictionary:
+        xValTotal.append(key)
+        yValTotal.append(dateDictionary[key])
+    figP.add_trace(
+        go.Scatter(x=xValTotal, y=yValTotal)
+    )
+    figC.update_layout(xaxis_title="Modeled Cases", yaxis_title='Count', title='Modeled Cases', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figP.update_layout(xaxis_title="Modeled Deaths", yaxis_title='Count', title='Modeled Deaths', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figH.update_layout(xaxis_title="Modeled Hospitalized", yaxis_title='Count', title='Modeled Hospitalized', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    return html.Div(
+        children=[
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=figC
+                      ),
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=figP
+                      ),
+
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=figH
+                      ),
+    ]
+    )
+
 @app.callback(Output('tabs-content-inline', 'children'),
               [Input('tabs-styled-with-inline', 'value')])
 def render_content(tab):
@@ -529,48 +647,34 @@ def render_content(tab):
                                           html.Img(
                                               className="logo", src=app.get_asset_url("dash-logo-new.png")
                                           ),
-                                          html.H2('Dash - Covid Map'),
-                                          html.P('''Move around the map and select a city'''),
-                                          html.P('''Pick a city below'''),
+                                          html.H2('Dash - Updated Covid Data'),
+                                          html.P('''Compare and Pick the States'''),
+                                          html.P('Covid Measurement Metrics to compare'),
                                           html.Div(className='div-for-dropdown',
                                                    children=[
                                                        dcc.Dropdown(
-                                                           id='stateSelector2',
+                                                           id='PredictPick',
                                                            options=[
-                                                               {'label': 'Texas', 'value': 'TX'},
-                                                               {'label': 'California', 'value': 'CA'},
+                                                               {'label': 'predictedCase', 'value': 'predictedCases'},
+                                                               {'label': 'predictedDeaths', 'value': 'predictedDeaths'},
+                                                               {'label': 'predictedHospitlization', 'value': 'predictedHospitlization'},
                                                            ],
-                                                           value='TX',
-                                                           searchable=False,
-                                                           clearable=False,
-                                                           className='fuck'
-                                                       ),
-                                                       dcc.Dropdown(
-                                                           id='citySelector',
-                                                           options=[
-                                                               {'label': 'Dallas', 'value': 0},
-                                                               {'label': 'Austin', 'value': 1},
-                                                               {'label': 'Houston', 'value': 2},
-                                                               {'label': 'San Antonio', 'value': 3}
-                                                           ],
-                                                           value=999,
+                                                           value='predictedCases',
                                                            searchable=False,
                                                            clearable=False,
                                                            className='fuck'
                                                        )
-                                                   ]),
+                                                   ],
+                                                   style={'color': '#1E1E1E'}),
                                       ]
                                       ),
                              html.Div(className='eight columns div-for-charts bg-grey',
                                       children=[
-                                          dcc.Graph(id='darkMap',
-                                                    config={'displayModeBar': False},
-                                                    figure=fig2
-                                                    ),
-                                          dcc.Graph(
-                                              id='example-graph-2',
-                                              figure=fig4
-                                          ),
+                                          dcc.Loading(
+                                              children= [
+                                                  dcc.Loading(
+                                                        html.Div(id='MultiPredict',))
+                                                     ])
                                       ])
                          ])
             ]

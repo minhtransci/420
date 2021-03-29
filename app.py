@@ -132,7 +132,7 @@ card_content = [
 
 app.layout = html.Div([
     dcc.Tabs(id="tabs-styled-with-inline", value='tab-2', children=[
-        dcc.Tab(label='Tab 1', value='tab-1'),
+        dcc.Tab(label='Testing', value='Testing'),
         dcc.Tab(label='Tab 2', value='tab-2'),
         dcc.Tab(label='Tab 3', value='tab-3'),
         dcc.Tab(label='Tab 4', value='tab-4'),
@@ -510,7 +510,7 @@ def update_predictPlot(predict_value):
 @app.callback(Output('tabs-content-inline', 'children'),
               [Input('tabs-styled-with-inline', 'value')])
 def render_content(tab):
-    if tab == 'tab-1':
+    if tab == 'Testing':
         return html.Div(
             children=[
                 html.Div(className='row',

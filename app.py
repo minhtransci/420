@@ -230,32 +230,31 @@ def update_statePlot(state_value, type_value):
     fig6.update_layout(xaxis_title="Days", yaxis_title='Count', title=type_value, legend_title="States")
     for j in range(len(state_value)):
         if state_value[j] not in stateDictionary:
-            if state_value[j] != 'us':
-                r = requests.get('https://api.covidtracking.com/v1/states/'+state_value[j]+'/daily.json')
-            else:
-                r = requests.get('https://api.covidtracking.com/v1/us/daily.json')
+            r = requests.get('https://api.covidactnow.org/v2/state/' + state_value[j] + '.timeseries.json?apiKey=8e215af157c74e9fbf1d77e7e982e23d')
             date = []
             numbers1 = []
             numbers2 = []
             numbers3 = []
             numbers4 = []
-            numbers5 = []
             b = r.json()
-            for days in range(len(b)-1, -1, -1):
-                f = str(b[days]['date'])
-                date.append(f[0:4] + '-' + f[4:6] + '-' + f[6:8])
-                numbers1.append(b[days]['positive'])
-                numbers2.append(b[days]['positiveIncrease'])
-                numbers3.append(b[days]['hospitalizedCurrently'])
-                numbers4.append(b[days]['death'])
-                numbers5.append(b[days]['deathIncrease'])
+            c = b['actualsTimeseries']
+            for dateS in c:
+                date.append(dateS['date'])
+                numbers1.append(dateS['newCases'])
+                numbers2.append(dateS['deaths'])
+                numbers4.append(dateS['cases'])
+                if 'vaccinationsInitiated' in dateS:
+                    numbers3.append(dateS['vaccinationsInitiated'])
+                else:
+                    numbers3.append(None)
+
 
             stateDictionary[state_value[j]] = date
-            stateDictionary[state_value[j]+'-positive'] = numbers1
-            stateDictionary[state_value[j] + '-positiveIncrease'] = numbers2
-            stateDictionary[state_value[j] + '-hospitalizedCurrently'] = numbers3
-            stateDictionary[state_value[j] + '-death'] = numbers4
-            stateDictionary[state_value[j] + '-deathIncrease'] = numbers5
+            stateDictionary[state_value[j] + '-cases'] = numbers4
+            stateDictionary[state_value[j]+'-newCases'] = numbers1
+            stateDictionary[state_value[j] + '-deaths'] = numbers2
+            stateDictionary[state_value[j] + '-vaccinationsInitiated'] = numbers3
+
 
         fig6.add_trace(go.Scatter(x=stateDictionary[state_value[j]], y=stateDictionary[state_value[j] + '-' + type_value], mode='lines', name=state_value[j]))
     fig6.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
@@ -648,59 +647,58 @@ def render_content(tab):
                                                        dcc.Dropdown(
                                                            id='StatePick',
                                                            options=[
-                                                               {'label': 'National', 'value': 'us'},
-                                                               {'label': 'Alabama', 'value': 'al'},
-                                                               {'label': 'Alaska', 'value': 'ak'},
-                                                               {'label': 'Arizona', 'value': 'az'},
-                                                               {'label': 'Arkansas', 'value': 'ar'},
-                                                               {'label': 'California', 'value': 'ca'},
-                                                               {'label': 'Colorado', 'value': 'co'},
-                                                               {'label': 'Connecticut', 'value': 'ct'},
-                                                               {'label': 'Delaware', 'value': 'de'},
-                                                               {'label': 'Florida', 'value': 'fl'},
-                                                               {'label': 'Georgia', 'value': 'ga'},
-                                                               {'label': 'Hawaii', 'value': 'hi'},
-                                                               {'label': 'Idaho', 'value': 'id'},
-                                                               {'label': 'Illinois', 'value': 'il'},
-                                                               {'label': 'Indiana', 'value': 'in'},
-                                                               {'label': 'Iowa', 'value': 'ia'},
-                                                               {'label': 'Kansas', 'value': 'ks'},
-                                                               {'label': 'Kentucky', 'value': 'ky'},
-                                                               {'label': 'Louisiana', 'value': 'la'},
-                                                               {'label': 'Maine', 'value': 'me'},
-                                                               {'label': 'Maryland', 'value': 'md'},
-                                                               {'label': 'Massachusetts', 'value': 'ma'},
-                                                               {'label': 'Michigan', 'value': 'mi'},
-                                                               {'label': 'Minnesota', 'value': 'mn'},
-                                                               {'label': 'Mississippi', 'value': 'ms'},
-                                                               {'label': 'Missouri', 'value': 'mo'},
-                                                               {'label': 'Montana', 'value': 'mt'},
-                                                               {'label': 'Nebraska', 'value': 'ne'},
-                                                               {'label': 'Nevada', 'value': 'nv'},
-                                                               {'label': 'New Hampshire', 'value': 'nh'},
-                                                               {'label': 'New Jersey', 'value': 'nj'},
-                                                               {'label': 'New Mexico', 'value': 'nm'},
-                                                               {'label': 'New York', 'value': 'ny'},
-                                                               {'label': 'North Carolina', 'value': 'nc'},
-                                                               {'label': 'North Dakota', 'value': 'nd'},
-                                                               {'label': 'Ohio', 'value': 'oh'},
-                                                               {'label': 'Oklahoma', 'value': 'ok'},
-                                                               {'label': 'Oregon', 'value': 'or'},
-                                                               {'label': 'Pennsylvania', 'value': 'pa'},
-                                                               {'label': 'Rhode Island', 'value': 'ri'},
-                                                               {'label': 'South Carolina', 'value': 'sc'},
-                                                               {'label': 'South Dakota', 'value': 'sd'},
-                                                               {'label': 'Tennessee', 'value': 'tn'},
-                                                               {'label': 'Texas', 'value': 'tx'},
-                                                               {'label': 'Utah', 'value': 'ut'},
-                                                               {'label': 'Vermont', 'value': 'vt'},
-                                                               {'label': 'Virginia', 'value': 'va'},
-                                                               {'label': 'Washington', 'value': 'wa'},
-                                                               {'label': 'West Virginia', 'value': 'wv'},
-                                                               {'label': 'Wisconsin', 'value': 'wi'},
-                                                               {'label': 'Wyoming', 'value': 'wy'},
+                                                               {'label': 'Alabama', 'value': 'AL'},
+                                                               {'label': 'Alaska', 'value': 'AK'},
+                                                               {'label': 'Arizona', 'value': 'AZ'},
+                                                               {'label': 'Arkansas', 'value': 'AR'},
+                                                               {'label': 'California', 'value': 'CA'},
+                                                               {'label': 'Colorado', 'value': 'CO'},
+                                                               {'label': 'Connecticut', 'value': 'CT'},
+                                                               {'label': 'Delaware', 'value': 'DE'},
+                                                               {'label': 'Florida', 'value': 'FL'},
+                                                               {'label': 'Georgia', 'value': 'GA'},
+                                                               {'label': 'Hawaii', 'value': 'HI'},
+                                                               {'label': 'Idaho', 'value': 'ID'},
+                                                               {'label': 'Illinois', 'value': 'IL'},
+                                                               {'label': 'Indiana', 'value': 'IN'},
+                                                               {'label': 'Iowa', 'value': 'IA'},
+                                                               {'label': 'Kansas', 'value': 'KS'},
+                                                               {'label': 'Kentucky', 'value': 'KY'},
+                                                               {'label': 'Louisiana', 'value': 'LA'},
+                                                               {'label': 'Maine', 'value': 'ME'},
+                                                               {'label': 'Maryland', 'value': 'MD'},
+                                                               {'label': 'Massachusetts', 'value': 'MA'},
+                                                               {'label': 'Michigan', 'value': 'MI'},
+                                                               {'label': 'Minnesota', 'value': 'MN'},
+                                                               {'label': 'Mississippi', 'value': 'MS'},
+                                                               {'label': 'Missouri', 'value': 'MO'},
+                                                               {'label': 'Montana', 'value': 'MT'},
+                                                               {'label': 'Nebraska', 'value': 'NE'},
+                                                               {'label': 'Nevada', 'value': 'NV'},
+                                                               {'label': 'New Hampshire', 'value': 'NH'},
+                                                               {'label': 'New Jersey', 'value': 'NJ'},
+                                                               {'label': 'New Mexico', 'value': 'NM'},
+                                                               {'label': 'New York', 'value': 'NY'},
+                                                               {'label': 'North Carolina', 'value': 'NC'},
+                                                               {'label': 'North Dakota', 'value': 'ND'},
+                                                               {'label': 'Ohio', 'value': 'OH'},
+                                                               {'label': 'Oklahoma', 'value': 'OK'},
+                                                               {'label': 'Oregon', 'value': 'OR'},
+                                                               {'label': 'Pennsylvania', 'value': 'PA'},
+                                                               {'label': 'Rhode Island', 'value': 'RI'},
+                                                               {'label': 'South Carolina', 'value': 'SC'},
+                                                               {'label': 'South Dakota', 'value': 'SD'},
+                                                               {'label': 'Tennessee', 'value': 'TN'},
+                                                               {'label': 'Texas', 'value': 'TX'},
+                                                               {'label': 'Utah', 'value': 'UT'},
+                                                               {'label': 'Vermont', 'value': 'VT'},
+                                                               {'label': 'Virginia', 'value': 'VA'},
+                                                               {'label': 'Washington', 'value': 'WA'},
+                                                               {'label': 'West Virginia', 'value': 'WV'},
+                                                               {'label': 'Wisconsin', 'value': 'WI'},
+                                                               {'label': 'Wyoming', 'value': 'WY'},
                                                            ],
-                                                           value=['tx'],
+                                                           value=['TX'],
                                                            placeholder='Select a State',
                                                            multi=True,
                                                            searchable=True,
@@ -713,13 +711,11 @@ def render_content(tab):
                                                        dcc.Dropdown(
                                                            id='PlotPick',
                                                            options=[
-                                                               {'label': 'Total Positive', 'value': 'positive'},
-                                                               {'label': 'Positive Increase', 'value': 'positiveIncrease'},
-                                                               {'label': 'Total Death', 'value': 'death'},
-                                                               {'label': 'Death Increase', 'value': 'deathIncrease'},
-                                                               {'label': 'Hospitalized Currently', 'value': 'hospitalizedCurrently'}
+                                                               {'label': 'newCases', 'value': 'newCases'},
+                                                               {'label': 'deaths', 'value': 'deaths'},
+                                                               {'label': 'vaccinationsInitiated', 'value': 'vaccinationsInitiated'},
                                                            ],
-                                                           value='positiveIncrease',
+                                                           value='newCases',
                                                            searchable=False,
                                                            clearable=False,
                                                            className='fuck'

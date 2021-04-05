@@ -3,7 +3,6 @@ import base64
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash_core_components as dcc
-import plotly.graph_objects as go
 #import plotly.graph_objects as go
 import pandas as pd
 #import numpy as np
@@ -35,88 +34,13 @@ vax_neg = vax_df["polarity_negative_percent"]
 vax_neu = vax_df["polarity_neutral_percent"]
 
 stateDictionary = {}
+fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
 
-dataVal = [cc, cd, rc, rd]
-
-aTime = 67
-
-random_xPie = [100, 2000, 550]
-namesPie = ['A', 'B', 'C']
-
-figPie = px.pie(values=random_xPie, names=namesPie)
-
-labels = ["Male", "Female"]
-
-fig3 = make_subplots(1, 2, specs=[[{"type": "xy"}, {'type':'domain'} ]])
-
-fig3.add_trace(go.Bar(y=[2, 3, 1]),
-              row=1, col=1)
-fig3.add_trace(go.Pie(labels=labels, values=[48,52], scalegroup='one'), 1, 2)
-
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=rd['Day'], y=rd['TX'], mode='lines', name='TX', ))
-fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))
-fig.update_layout(xaxis_title="Days", yaxis_title='Count', title="States Count Over Time", legend_title="States")
-
-fig2 = go.Figure(go.Scattermapbox(), )
-
-latCity = ['32.7767', '30.2672', '29.7604', '29.4241', '34.0522', '32.7157', '37.3382', '37.7749']
-lonCity = ['-96.7970', '-97.7431', '-95.3698', '-98.4936', '-118.2437', '-117.1611', '-121.8863', '-122.4194']
-cityName = ['Dallas', 'Austin', 'Houston', 'San Antonio', 'Los Angeles', 'San Diego', 'San Jose', 'San Francisco']
-stateCityIn = ['TX', 'TX', 'TX', 'TX', 'CA', 'CA', 'CA', 'CA']
-
-countyName = ['Harris County', 'Dallas County', 'Tarrant County', 'El Paso County', 'Bexar County', 'Hidalgo County',
-              'Travis County']
-countyCases = [166545, 101282, 65426, 63161, 54572, 36686, 33016]
-countyDeaths = [2866, 1319, 878, 697, 1429, 1741, 455]
-countyRecovery = [135980, 89343, 56715, 35858, 50087, 32783, 31377]
-countyActive = [27699, 10620, 7833, 26606, 3056, 2163, 1184]
-
-
-fig4 = go.Figure(data=[go.Table(header=dict(values=['CountyName','CountyCases', 'CountyDeaths', 'CountyRecovery',
-                                                    'CountyActive']),
-                 cells=dict(values=[countyName, countyCases, countyDeaths, countyRecovery, countyActive]))
-                     ])
-
-fig2 = go.Figure(go.Scattermapbox(
-        lat=latCity,
-        lon=lonCity,
-        mode='markers',
-        marker=go.scattermapbox.Marker(
-            size=[56, 20, 25, 24, 60, 29, 40, 20]
-        ),
-        text=['Dallas', 'Austin', 'Houston', 'San Antonio', 'Los Angeles', 'San Diego', 'San Jose', 'San Francisco'],
-    ))
-fig2.update_layout(
-    hovermode='closest',
-    mapbox=dict(
-        accesstoken="pk.eyJ1IjoibWluaHRyYW4yMSIsImEiOiJja2dlNG53YmYwZHhqMnJsN2tpNHUwZXR1In0.VOD0SAfL2ZQgAtZ0W6Vg0g",
-        bearing=0,
-        center=dict(
-            lat=30,
-            lon=-97,
-        ),
-        pitch=0,
-        zoom=4,
-    ),
-    margin=dict(t=0, b=0, l=0, r=0)
-)
-
-fig2.update_layout(mapbox_style="dark", mapbox_accesstoken="pk.eyJ1IjoibWluaHRyYW4yMSIsImEiOiJja2dlNG53YmYwZHhqMnJsN2tpNHUwZXR1In0.VOD0SAfL2ZQgAtZ0W6Vg0g")
-
-# Load data
-df = pd.read_csv('data/stockdata2.csv', index_col=0, parse_dates=True)
-df.index = pd.to_datetime(df['Date'])
-# Creates a list of dictionaries, which have the keys 'label' and 'value'.
-def get_options(list_stocks):
-    dict_list = []
-    for i in list_stocks:
-        dict_list.append({'label': i, 'value': i})
-    return dict_list
-# Initialize the app
 FONT_AWESOME = "https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, FONT_AWESOME])
 server = app.server
+
 card_content = [
     dbc.CardHeader("Card header"),
     dbc.CardBody(
@@ -131,68 +55,19 @@ card_content = [
 ]
 
 app.layout = html.Div([
-    dcc.Tabs(id="tabs-styled-with-inline", value='tab-2', children=[
-        dcc.Tab(label='Testing', value='Testing'),
-        dcc.Tab(label='Tab 2', value='tab-2'),
+    dcc.Tabs(id="tabs-styled-with-inline", value='tab-1', children=[
         dcc.Tab(label='Tab 3', value='tab-3'),
         dcc.Tab(label='Tab 4', value='tab-4'),
         dcc.Tab(label='Tab 5', value='tab-5'),
+        dcc.Tab(label='Tab 6', value='tab-6'),
     ], ),
     html.Div(id='tabs-content-inline')
 ])
 dictCity = {}
-for i in range(len(latCity)):
-    dictCity[cityName[i]] = [(latCity[i], lonCity[i])]
-
-def randomNum():
-    random.seed(datetime.now())
-    retVal = random.randint(0, 10000000000)
-    return retVal
-
-@app.callback(Output('darkMap', 'figure'),
-              Input('citySelector', 'value'))
-def update_map(val):
-    if(val == 999):
-        return fig2
-    fig2.update_layout(
-        hovermode='closest',
-        mapbox=dict(
-            accesstoken="pk.eyJ1IjoibWluaHRyYW4yMSIsImEiOiJja2dlNG53YmYwZHhqMnJsN2tpNHUwZXR1In0.VOD0SAfL2ZQgAtZ0W6Vg0g",
-            center=dict(
-                lat=float(latCity[val]),
-                lon=float(lonCity[val]),
-            ),
-            pitch=0,
-            zoom=8,
-        )
-    )
-    zoomVal = fig2['layout']['mapbox']['zoom']
-    print(zoomVal)
-    return fig2
-
-@app.callback(Output('timeseries', 'figure'),
-              [Input('stateSelector', 'value'),
-               Input('plotSelector', 'value')])
-def update_timeseries(selected_dropdown_value, selected_plot_value):
-    selectedData = dataVal[selected_plot_value]
-
-    fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
-    fig.update_layout(xaxis_title="Days", yaxis_title='Count', title="States Count Over Time", legend_title="States")
-    print("Update state", selected_dropdown_value)
-    print("Update plot", selected_plot_value)
-    if len(selected_dropdown_value) > 0:
-        for i in range(len(selected_dropdown_value)):
-            stateVal = selected_dropdown_value[i]
-            fig.add_trace(go.Scatter(x=selectedData['Day'], y=selectedData[stateVal], mode='lines', name=stateVal))
-    else:
-        fig.add_trace(go.Scatter(x=selectedData['Day'], y=selectedData['TX'], mode='lines', name='TX'))
-    fig.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    return fig
 
 @app.callback(Output('pieGraph', 'figure'),
-              [Input('pieSelector1', 'value'),
-               Input('pieSelector2', 'value')])
-def update_pieGraph(selected_pie1_value, selected_pie2_value):
+              [Input('pieSelector1', 'value')])
+def update_pieGraph(selected_pie1_value):
     if (selected_pie1_value == 0):
         a = covid_pos.iloc[-1]
         b = covid_neg.iloc[-1]
@@ -206,9 +81,8 @@ def update_pieGraph(selected_pie1_value, selected_pie2_value):
     return figPie
 
 @app.callback(Output('timeTweet', 'figure'),
-              [Input('pieSelector1', 'value'),
-               Input('pieSelector2', 'value')])
-def update_timeTweet(selected_pie1_value, selected_pie2_value):
+              [Input('pieSelector1', 'value')])
+def update_timeTweet(selected_pie1_value):
     fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
     fig.update_layout(xaxis_title="Days", yaxis_title='Percentage', title="Tweet", legend_title="Reaction")
     if(selected_pie1_value == 0):
@@ -219,6 +93,20 @@ def update_timeTweet(selected_pie1_value, selected_pie2_value):
         fig.add_trace(go.Scatter(y=vax_neg, mode='lines', name='Negative'))
     #fig.add_trace(go.Scatter(y=covid_neu, mode='lines', name='Neutral'))
     return fig
+
+@app.callback(Output('citySelector', 'options'),
+              Input('stateSelector2', 'value'))
+def updateCity(value):
+    if value == 'TX':
+        return [{'label': 'Dallas', 'value': 0},{'label': 'Austin', 'value': 1},{'label': 'Houston', 'value': 2},
+            {'label': 'San Antonio', 'value': 3}]
+    else:
+        return [{'label': 'Los Angeles', 'value': 4},{'label': 'San Diego', 'value': 5},{'label': 'San Jose', 'value': 6},
+            {'label': 'San Francisco', 'value': 7}]
+
+
+
+
 
 @app.callback(Output('statePlot', 'figure'),
               [Input('StatePick', 'value'),
@@ -261,19 +149,107 @@ def update_statePlot(state_value, type_value):
     print(datetime.datetime.now() - a)
     return fig6
 
+@app.callback(Output('MultiPredict', 'children'),
+              [Input('PredictPick', 'value'),])
+def update_predictPlot(predict_value):
+    global aTime
+    a = datetime.datetime.now()
+    figP = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    figC = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    figH = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+
+    mydb = mysql.connector.connect(
+        host='coviddata.cphvsbfyrgxg.us-east-2.rds.amazonaws.com', user='kriramz',
+        password='Star3003!!!!', database='simDB'
+    )
+
+    mycursor = mydb.cursor()
+
+    mycursor.execute("SELECT * FROM sim")
+
+    myresult = mycursor.fetchall()
+    xVals = []
+    yVals = []
+    yValsC = []
+    yValsH = []
+    yValsSum = 0
+    for x in myresult:
+        yValsSum = yValsSum + x[3]
+        xVals.append(x[0])
+        yVals.append(yValsSum)
+        yValsC.append(x[1])
+        yValsH.append(x[2])
+    figP.add_trace(
+        go.Scatter(x=xVals,y=yVals, name="Modeled National"),
+    )
+    figC.add_trace(
+        go.Scatter(x=xVals,y=yValsC, name="Modeled National"),
+    )
+    figH.add_trace(
+        go.Scatter(x=xVals,y=yValsH, name="Modeled National"),
+    )
+    ###
+    r1 = requests.get('https://minhtransci.github.io/sample.json')
+    b1 = r1.json()
+    xValTotal = []
+    yValTotal = []
+
+    for data in b1:
+        xValTotal.append(data)
+        yValTotal.append(b1[data])
+    del xValTotal[-1]
+    del yValTotal[-1]
+    figP.add_trace(
+        go.Scatter(x=xValTotal, y=yValTotal, name="Actual National")
+    )
+    figC.update_layout(xaxis_title="Date", yaxis_title='Daily Count', title='Modeled Cases', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figP.update_layout(xaxis_title="Date", yaxis_title='Cumulative Count', title='Modeled Deaths', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figH.update_layout(xaxis_title="Date", yaxis_title='Daily Count', title='Modeled Hospitalized', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    if(predict_value == "predictedCases"):
+        return html.Div(
+            children=[
+                dcc.Graph(id='timeseries',
+                          config={'displayModeBar': False},
+                          figure=figC
+                          ),
+                html.P('Covid Measurement Metrics to compare1'),
+            ]
+        )
+    elif(predict_value == "predictedDeaths"):
+        return html.Div(
+            children=[
+                dcc.Graph(id='timeseries',
+                          config={'displayModeBar': False},
+                          figure=figP
+                          ),
+                html.P('Covid Measurement Metrics to compare2'),
+            ]
+        )
+    else:
+        return html.Div(
+            children=[
+                dcc.Graph(id='timeseries',
+                          config={'displayModeBar': False},
+                          figure=figH
+                          ),
+                html.P('Covid Measurement Metrics to compare3'),
+            ]
+        )
+
 
 @app.callback(Output('MultiPlots', 'children'),
-              [Input('stateMultiPick', 'value')])
-def MultiStepPlot(state):
+              [Input('stateMultiPick', 'value'),
+               Input('StatePlotPick', 'value')],)
+def MultiStepPlot(state, plotPick):
 
     fig11 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
-    fig11.update_layout(xaxis_title="Days", yaxis_title='Count', title=state + '-cases')
+    fig11.update_layout(xaxis_title="Date", yaxis_title='Cumulative Cases', title=state + '-cases')
     fig12 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
-    fig12.update_layout(xaxis_title="Days", yaxis_title='Count', title=state + '-newCases')
+    fig12.update_layout(xaxis_title="Date", yaxis_title='Daily Cases', title=state + '-newCases')
     fig13 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
-    fig13.update_layout(xaxis_title="Days", yaxis_title='Count', title=state + '-deaths')
+    fig13.update_layout(xaxis_title="Date", yaxis_title='Cumulative Deaths', title=state + '-deaths')
     fig14 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
-    fig14.update_layout(xaxis_title="Days", yaxis_title='Count', title=state + '-vaccinationsInitiated')
+    fig14.update_layout(xaxis_title="Date", yaxis_title='Cumulative Vaccinations', title=state + '-vaccinationsInitiated')
     a = datetime.datetime.now()
     if state not in stateDictionary:
         a = datetime.datetime.now()
@@ -310,7 +286,6 @@ def MultiStepPlot(state):
     var2 = 0
     lastReal = 0
     lastReal7 = 0
-    print(new1List)
     for day in range(0,7):
         if new1List[day]:
             var1 = var1 + new1List[day]
@@ -339,12 +314,14 @@ def MultiStepPlot(state):
 
     fig11.add_trace(go.Scatter(x=stateDictionary[state], y=stateDictionary[state + '-cases'], mode='lines', name=state))
     fig11.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    fig12.add_trace(go.Bar(x=stateDictionary[state], y=stateDictionary[state + '-newCases']))
-    fig12.add_trace(go.Scatter(x=stateDictionary[state], y=mva1))
+    fig12.add_trace(go.Bar(x=stateDictionary[state], y=stateDictionary[state + '-newCases'], name=state+" Daily"))
+    fig12.add_trace(go.Scatter(x=stateDictionary[state], y=mva1, name=state+" 7 Day Average"))
     fig12.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     fig13.add_trace(go.Scatter(x=stateDictionary[state], y=stateDictionary[state + '-deaths'], mode='lines', name=state))
     fig13.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    fig14.add_trace(go.Scatter(x=stateDictionary[state], y=stateDictionary[state + '-vaccinationsInitiated'], mode='lines', name=state))
+    xOne = stateDictionary[state][330:]
+    yOne = stateDictionary[state + '-vaccinationsInitiated'][330:]
+    fig14.add_trace(go.Scatter(x=xOne, y=yOne, mode='lines', name=state))
     fig14.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     fig12.update_layout(
         updatemenus=[go.layout.Updatemenu(
@@ -367,320 +344,52 @@ def MultiStepPlot(state):
         ])
 
     print('TimeA', datetime.datetime.now() - a)
-    return html.Div(
-        children=[
-            dcc.Graph(id='timeseries',
-                      config={'displayModeBar': False},
-                      figure=fig11
-                      ),
-            dcc.Graph(id='timeseries',
-                      config={'displayModeBar': False},
-                      figure=fig12
-                      ),
+    if(plotPick == "Cases"):
+        return html.Div(
+            children=[
+                dcc.Graph(id='timeseries',
+                          config={'displayModeBar': False},
+                          figure=fig11
+                          )
+            ]
+        )
 
-            dcc.Graph(id='timeseries',
-                      config={'displayModeBar': False},
-                      figure=fig13
-                      ),
-            dcc.Graph(id='timeseries',
-                      config={'displayModeBar': False},
-                      figure=fig14
-                      ),
-    ]
-    )
+    elif(plotPick == "NewCases"):
+        return html.Div(
+            children=[
+                dcc.Graph(id='timeseries',
+                          config={'displayModeBar': False},
+                          figure=fig12
+                          ),
+            ]
+        )
 
-@app.callback(Output('MultiPredict', 'children'),
-              [Input('PredictPick', 'value'),])
-def update_predictPlot(predict_value):
-    global aTime
-    a = datetime.datetime.now()
-    figP = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
-    figC = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
-    figH = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
+    elif(plotPick == "Deaths"):
+        return html.Div(
+            children=[
+                dcc.Graph(id='timeseries',
+                          config={'displayModeBar': False},
+                          figure=fig13
+                          ),
+            ]
+        )
 
-    mydb = mysql.connector.connect(
-        host='coviddata.cphvsbfyrgxg.us-east-2.rds.amazonaws.com', user='kriramz',
-        password='Star3003!!!!', database='simDB'
-    )
+    else:
+        return html.Div(
+            children=[
+                dcc.Graph(id='timeseries',
+                          config={'displayModeBar': False},
+                          figure=fig14
+                          ),
+            ]
+        )
 
-    mycursor = mydb.cursor()
 
-    mycursor.execute("SELECT * FROM sim")
-
-    myresult = mycursor.fetchall()
-    xVals = []
-    yVals = []
-    yValsC = []
-    yValsH = []
-    yValsSum = 0
-    for x in myresult:
-        yValsSum = yValsSum + x[3]
-        xVals.append(x[0])
-        yVals.append(yValsSum)
-        yValsC.append(x[1])
-        yValsH.append(x[2])
-    figP.add_trace(
-        go.Scatter(x=xVals,y=yVals)
-    )
-    figC.add_trace(
-        go.Scatter(x=xVals,y=yValsC)
-    )
-    figH.add_trace(
-        go.Scatter(x=xVals,y=yValsH)
-    )
-    ###
-    state_value = ['AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA', 'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA',
-'MA', 'MD', 'ME', 'MI', 'MN', 'MO', 'MP', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM', 'NV', 'NY', 'OH', 'OK',
-'OR', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY']
-    stateDictionary = {}
-    for x in myresult:
-        for j in range(len(state_value)):
-            if state_value[j] not in stateDictionary:
-                if state_value[j] != 'us':
-                    r = requests.get('https://api.covidactnow.org/v2/state/' + state_value[
-                        j] + '.timeseries.json?apiKey=8e215af157c74e9fbf1d77e7e982e23d')
-                date = []
-                numbers1 = []
-                numbers2 = []
-                numbers3 = []
-                numbers4 = []
-                b = r.json()
-                c = b['actualsTimeseries']
-                for days in c:
-                    date.append(days['date'])
-                    numbers1.append(days['cases'])
-                    numbers2.append(days['newCases'])
-                    numbers3.append(days['deaths'])
-                    if 'vaccinationsInitiated' in days:
-                        numbers4.append(days['vaccinationsInitiated'])
-                    else:
-                        numbers4.append(None)
-                stateDictionary[state_value[j]] = date
-                stateDictionary[state_value[j] + '-cases'] = numbers1
-                stateDictionary[state_value[j] + '-newCases'] = numbers2
-                stateDictionary[state_value[j] + '-deaths'] = numbers3
-                stateDictionary[state_value[j] + '-vaccinationsInitiated'] = numbers4
-
-    dateDictionary = {}
-    for i in state_value:
-        for j in stateDictionary[i]:
-            if j not in dateDictionary:
-                dateDictionary[j] = 0
-
-    for i in state_value:
-        for j in range(len(stateDictionary[i])):
-            date = stateDictionary[i][j]
-            num = stateDictionary[i + '-deaths'][j]
-            if num == None:
-                num = 0
-            if date not in dateDictionary:
-                dateDictionary[date] = num
-            else:
-                dateDictionary[date] = dateDictionary[date] + num
-
-    xValTotal = []
-    yValTotal = []
-    for key in dateDictionary:
-        xValTotal.append(key)
-        yValTotal.append(dateDictionary[key])
-    figP.add_trace(
-        go.Scatter(x=xValTotal, y=yValTotal)
-    )
-    figC.update_layout(xaxis_title="Modeled Cases", yaxis_title='Count', title='Modeled Cases', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    figP.update_layout(xaxis_title="Modeled Deaths", yaxis_title='Count', title='Modeled Deaths', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    figH.update_layout(xaxis_title="Modeled Hospitalized", yaxis_title='Count', title='Modeled Hospitalized', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    return html.Div(
-        children=[
-            dcc.Graph(id='timeseries',
-                      config={'displayModeBar': False},
-                      figure=figC
-                      ),
-            dcc.Graph(id='timeseries',
-                      config={'displayModeBar': False},
-                      figure=figP
-                      ),
-
-            dcc.Graph(id='timeseries',
-                      config={'displayModeBar': False},
-                      figure=figH
-                      ),
-    ]
-    )
 
 @app.callback(Output('tabs-content-inline', 'children'),
               [Input('tabs-styled-with-inline', 'value')])
 def render_content(tab):
-    if tab == 'Testing':
-        return html.Div(
-            children=[
-                html.Div(className='row',
-                         children=[
-                             html.Div(className='four columns div-user-controls',
-                                      children=[
-                                          html.Img(
-                                              className="logo", src=app.get_asset_url("dash-logo-new.png")
-                                          ),
-                                          html.H2('Dash - Covid Template'),
-                                          html.Div(className='div-for-dropdown',
-                                                   children=[
-                                                       dcc.Dropdown(
-                                                           id='plotSelector',
-                                                           options=[
-                                                               {'label': 'Cumulative Cases', 'value': 0},
-                                                               {'label': 'Cumulative Deaths', 'value': 1},
-                                                               {'label': '7-Day Rolling Cases', 'value': 2},
-                                                               {'label': '7-Day Rolling Deaths', 'value': 3}
-                                                           ],
-                                                           value=3,
-                                                           searchable=False,
-                                                           clearable=False,
-                                                           className='fuck'
-                                                       )
-                                                   ]),
-                                          html.P('''Visualising time series with Plotly - Dash'''),
-                                          html.P('''Pick one or more states from the dropdown below.'''),
-                                          html.Div(className='div-for-dropdown',
-                                                   children=[
-                                                       dcc.Dropdown(
-                                                           id='stateSelector',
-                                                           options=[
-                                                               {'label': 'California', 'value': 'CA'},
-                                                               {'label': 'Florida', 'value': 'FL'},
-                                                               {'label': 'Illionis', 'value': 'IL'},
-                                                               {'label': 'North Carolina', 'value': 'NC'},
-                                                               {'label': 'Texas', 'value': 'TX'},
-                                                               {'label': 'Wisconsin', 'value': 'WI'}
-                                                           ],
-                                                           value=['TX'],
-                                                           multi=True,
-                                                           clearable=False,
-                                                           className='stateSelector'
-                                                       ),
-                                                   ],
-                                                   style={'color': '#1E1E1E'}),
-                                          dbc.Col(html.Div([
-                                              dbc.Card(dbc.CardBody(
-                                                  [
-                                                      dbc.CardLink("Get Tested Now",
-                                                                   href="https://publichealth.harriscountytx.gov/Resources/2019-Novel-Coronavirus/COVID-19-Testing-Information"),
-                                                  ]
-                                              ), color="dark", inverse=True, body=True),
-                                          ])),
-                                      ]
-                                      ),
-                             html.Div(className='eight columns div-for-charts bg-grey',
-                                      children=[
-                                          dbc.Row(
-                                              [
-                                                  dbc.Col(dbc.Card(
-                                                      [
-                                                          dbc.CardHeader(
-                                                              [
-                                                                  html.H5("United States")
-                                                              ]
-                                                          ),
-                                                          dbc.CardBody(
-                                                              [
-                                                                  html.I(className="fas fa-notes-medical"),
-                                                                  html.H5("Current Infections", className="card-title"),
-                                                                  html.H5(
-                                                                      "123,456,789",
-                                                                      className="card-title",
-                                                                  ),
-                                                              ]
-                                                          ),
-                                                      ], color="warning", inverse=True)),
-                                                  dbc.Col(dbc.Card(
-                                                      [
-                                                          dbc.CardHeader(
-                                                              [
-                                                                  html.H5("United States")
-                                                              ]
-                                                          ),
-                                                          dbc.CardBody(
-                                                              [
-                                                                  html.I(className="fas fa-heart-broken"),
-                                                                  html.H5("Deaths", className="card-title"),
-                                                                  html.H5(
-                                                                      "123,456,789",
-                                                                      className="card-title",
-                                                                  ),
-                                                              ]
-                                                          ),
-                                                      ], color="danger", inverse=True)),
-                                                  dbc.Col(dbc.Card(
-                                                      [
-                                                          dbc.CardHeader(
-                                                              [
-                                                                  html.H5("United States")
-                                                              ]
-                                                          ),
-                                                          dbc.CardBody(
-                                                              [
-                                                                  html.I(className="fas fa-heart"),
-                                                                  html.H5("Recovered", className="card-title"),
-                                                                  html.H5(
-                                                                      "123,456,789",
-                                                                      className="card-title",
-                                                                  ),
-                                                              ]
-                                                          ),
-                                                      ], color="success", inverse=True)),
-                                              ],
-                                              className="mb-4", justify="center", align="center"
-                                          ),
-                                          dcc.Graph(id='timeseries',
-                                                    config={'displayModeBar': False},
-                                                    figure=fig
-                                                    ),
-                                      ], style={'text-align': 'center'})
-                         ])
-            ]
-        )
-    elif tab == 'tab-2':
-        return html.Div(
-            children=[
-                html.Div(className='row',
-                         children=[
-                             html.Div(className='four columns div-user-controls',
-                                      children=[
-                                          html.Img(
-                                              className="logo", src=app.get_asset_url("dash-logo-new.png")
-                                          ),
-                                          html.H2('Dash - Updated Covid Data'),
-                                          html.P('''Compare and Pick the States'''),
-                                          html.P('Covid Measurement Metrics to compare'),
-                                          html.Div(className='div-for-dropdown',
-                                                   children=[
-                                                       dcc.Dropdown(
-                                                           id='PredictPick',
-                                                           options=[
-                                                               {'label': 'predictedCase', 'value': 'predictedCases'},
-                                                               {'label': 'predictedDeaths', 'value': 'predictedDeaths'},
-                                                               {'label': 'predictedHospitlization', 'value': 'predictedHospitlization'},
-                                                           ],
-                                                           value='predictedCases',
-                                                           searchable=False,
-                                                           clearable=False,
-                                                           className='fuck'
-                                                       )
-                                                   ],
-                                                   style={'color': '#1E1E1E'}),
-                                      ]
-                                      ),
-                             html.Div(className='eight columns div-for-charts bg-grey',
-                                      children=[
-                                          dcc.Loading(
-                                              children= [
-                                                  dcc.Loading(
-                                                        html.Div(id='MultiPredict',))
-                                                     ])
-                                      ])
-                         ])
-            ]
-        )
-
-    elif tab == 'tab-3':
+    if tab == 'tab-3':
         return html.Div(
             children=[
                 html.Div(className='row',
@@ -706,27 +415,10 @@ def render_content(tab):
                                                            className='pieSelect1'
                                                        )
                                                    ]),
-                                          html.P('''Pick a measurement'''),
-                                          html.Div(className='div-for-dropdown',
-                                                   children=[
-                                                       dcc.Dropdown(
-                                                           id='pieSelector2',
-                                                           options=[
-                                                               {'label': 'Noramlization', 'value': 0},
-                                                           ],
-                                                           value=0,
-                                                           searchable=False,
-                                                           clearable=False,
-                                                           className='pieSelect2'
-                                                       )
-                                                   ]),
                                       ]
                                       ),
                              html.Div(className='eight columns div-for-charts bg-grey',
                                       children=[
-                                          dcc.Graph(id='pieGraph',
-                                                    config={'displayModeBar': False},
-                                                    ),
                                           dcc.Graph(id='timeTweet',
                                                     config={'displayModeBar': False},
                                                     ),
@@ -818,6 +510,7 @@ def render_content(tab):
                                                                {'label': 'newCases', 'value': 'newCases'},
                                                                {'label': 'deaths', 'value': 'deaths'},
                                                                {'label': 'vaccinationsInitiated', 'value': 'vaccinationsInitiated'},
+
                                                            ],
                                                            value='newCases',
                                                            searchable=False,
@@ -911,7 +604,27 @@ def render_content(tab):
                                                            value='TX',
                                                            searchable=False,
                                                            className='fuck'
-                                                       )
+                                                       ),
+                                                       html.P('Covid Measurement Metrics to compare'),
+                                                       html.Div(className='div-for-dropdown',
+                                                                children=[
+                                                                    dcc.Dropdown(
+                                                                        id='StatePlotPick',
+                                                                        options=[
+                                                                            {'label': 'Cases', 'value': 'Cases'},
+                                                                            {'label': 'New Cases', 'value': 'NewCases'},
+                                                                            {'label': 'Deaths',
+                                                                             'value': 'Deaths'},
+                                                                            {'label': 'Vaccinations', 'value':'Vaccinations'}
+
+                                                                        ],
+                                                                        value='NewCases',
+                                                                        searchable=False,
+                                                                        clearable=False,
+                                                                        className='fuck'
+                                                                    )
+                                                                ],
+                                                                style={'color': '#1E1E1E'}),
                                                    ]),
                                           html.P('''Visualising time series with Plotly - Dash'''),
                                           html.P('''Pick one or more states from the dropdown below.'''),
@@ -987,6 +700,50 @@ def render_content(tab):
                          ])
             ]
         )
+    elif tab == 'tab-6':
+        return html.Div(
+            children=[
+                html.Div(className='row',
+                         children=[
+                             html.Div(className='four columns div-user-controls',
+                                      children=[
+                                          html.Img(
+                                              className="logo", src=app.get_asset_url("dash-logo-new.png")
+                                          ),
+                                          html.H2('Dash - Updated Covid Data'),
+                                          html.P('''Compare and Pick the States'''),
+                                          html.P('Covid Measurement Metrics to compare'),
+                                          html.Div(className='div-for-dropdown',
+                                                   children=[
+                                                       dcc.Dropdown(
+                                                           id='PredictPick',
+                                                           options=[
+                                                               {'label': 'predictedCase', 'value': 'predictedCases'},
+                                                               {'label': 'predictedDeaths', 'value': 'predictedDeaths'},
+                                                               {'label': 'predictedHospitlization', 'value': 'predictedHospitlization'},
+                                                           ],
+                                                           value='predictedCases',
+                                                           searchable=False,
+                                                           clearable=False,
+                                                           className='fuck'
+                                                       )
+                                                   ],
+                                                   style={'color': '#1E1E1E'}),
+                                      ]
+                                      ),
+                             html.Div(className='eight columns div-for-charts bg-grey',
+                                      children=[
+                                          dcc.Loading(
+                                              children= [
+                                                  dcc.Loading(
+                                                        html.Div(id='MultiPredict',))
+                                                     ])
+                                      ])
+                         ])
+            ]
+        )
+
 
 if __name__ == '__main__':
+    app.config['suppress_callback_exceptions'] = True
     app.run_server(debug=True)

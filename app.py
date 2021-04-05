@@ -103,7 +103,7 @@ def update_timeTweet(selected_pie1_value):
                 dcc.Graph(id='timeseries',
                           figure=fig
                           ),
-                html.P('Covid Measurement Metrics to compare1'),
+                html.P('.'),
             ]
         )
 
@@ -166,7 +166,7 @@ def update_statePlot(state_value, type_value):
                 dcc.Graph(id='timeseries',
                           figure=fig6
                           ),
-                html.P('Covid Measurement Metrics to compare1'),
+                html.P('.'),
             ]
         )
 
@@ -201,13 +201,13 @@ def update_predictPlot(predict_value):
         yValsC.append(x[1])
         yValsH.append(x[2])
     figP.add_trace(
-        go.Scatter(x=xVals,y=yVals, name="Modeled National"),
+        go.Scatter(x=xVals,y=yVals, name="Daily Predicted values for Infections"),
     )
     figC.add_trace(
-        go.Scatter(x=xVals,y=yValsC, name="Modeled National"),
+        go.Scatter(x=xVals,y=yValsC, name="Cumulative Predicted values for Deaths"),
     )
     figH.add_trace(
-        go.Scatter(x=xVals,y=yValsH, name="Modeled National"),
+        go.Scatter(x=xVals,y=yValsH, name="Daily Predicted values for Hospitalizations"),
     )
     ###
     r1 = requests.get('https://minhtransci.github.io/sample.json')
@@ -223,9 +223,9 @@ def update_predictPlot(predict_value):
     figP.add_trace(
         go.Scatter(x=xValTotal, y=yValTotal, name="Actual National")
     )
-    figC.update_layout(xaxis_title="Date", yaxis_title='Daily Count', title='Modeled Cases', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    figP.update_layout(xaxis_title="Date", yaxis_title='Cumulative Count', title='Modeled Deaths', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    figH.update_layout(xaxis_title="Date", yaxis_title='Daily Count', title='Modeled Hospitalized', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figC.update_layout(xaxis_title="Date", yaxis_title='Daily Infections Count from COVID-19', title='Modeled COVID-19 Infections in the United States Over Time', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figP.update_layout(xaxis_title="Date", yaxis_title='Cumulative Deaths Count from COVID-19', title='Modeled Deaths from COVID-19 in the United States Over Time', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figH.update_layout(xaxis_title="Date", yaxis_title='Daily Hospitalizations Count from COVID-19', title='Modeled Hospitalizations due to COVID-19 in the United States Over Time', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     if(predict_value == "predictedCases"):
         return html.Div(
             children=[
@@ -233,7 +233,7 @@ def update_predictPlot(predict_value):
                           config={'displayModeBar': False},
                           figure=figC
                           ),
-                html.P('Covid Measurement Metrics to compare1'),
+                html.P('The model estimates the total number of infections in the US population from the COVID-19 virus, accounting for tested and untested individuals.'),
             ]
         )
     elif(predict_value == "predictedDeaths"):
@@ -243,7 +243,7 @@ def update_predictPlot(predict_value):
                           config={'displayModeBar': False},
                           figure=figP
                           ),
-                html.P('Covid Measurement Metrics to compare2'),
+                html.P('The model estimates the actual total number of deceased in the US population from the COVID-19 virus. The accuracy of the model drops drastically at the beginning of February, as shown by the divergence between the predicted and actual curves. It was assumed that this was caused by the vaccine being more effective than predicted, which resulted in fewer deaths than the model predicted.'),
             ]
         )
     else:
@@ -253,7 +253,7 @@ def update_predictPlot(predict_value):
                           config={'displayModeBar': False},
                           figure=figH
                           ),
-                html.P('Covid Measurement Metrics to compare3'),
+                html.P('The model estimates the total number of hospitalizations in the US population from the COVID-19 virus. Daily values are calculated using modeled infections and a hospitalization multiplier.'),
             ]
         )
 

@@ -56,8 +56,8 @@ card_content = [
 
 app.layout = html.Div([
     dcc.Tabs(id="tabs-styled-with-inline", value='tab-6', children=[
-        dcc.Tab(label='Compare States', value='tab-3'),
-        dcc.Tab(label='Twitter Sentiment', value='tab-4'),
+        dcc.Tab(label='Twitter Sentiment', value='tab-3'),
+        dcc.Tab(label='Compare States', value='tab-4'),
         dcc.Tab(label='State Level', value='tab-5'),
         dcc.Tab(label='Forecasting', value='tab-6'),
     ], ),
@@ -635,60 +635,60 @@ def render_content(tab):
                                       children=[
                                           dbc.Row(
                                               [
-                                                  dbc.Col(dbc.Card(
-                                                      [
-                                                          dbc.CardHeader(
-                                                              [
-                                                                  html.H5("United States")
-                                                              ]
-                                                          ),
-                                                          dbc.CardBody(
-                                                              [
-                                                                  html.I(className="fas fa-notes-medical"),
-                                                                  html.H5("Current Infections", className="card-title"),
-                                                                  html.H5(
-                                                                      "123,456,789",
-                                                                      className="card-title",
-                                                                  ),
-                                                              ]
-                                                          ),
-                                                      ], color="warning", inverse=True)),
-                                                  dbc.Col(dbc.Card(
-                                                      [
-                                                          dbc.CardHeader(
-                                                              [
-                                                                  html.H5("United States")
-                                                              ]
-                                                          ),
-                                                          dbc.CardBody(
-                                                              [
-                                                                  html.I(className="fas fa-heart-broken"),
-                                                                  html.H5("Deaths", className="card-title"),
-                                                                  html.H5(
-                                                                      "123,456,789",
-                                                                      className="card-title",
-                                                                  ),
-                                                              ]
-                                                          ),
-                                                      ], color="danger", inverse=True)),
-                                                  dbc.Col(dbc.Card(
-                                                      [
-                                                          dbc.CardHeader(
-                                                              [
-                                                                  html.H5("United States")
-                                                              ]
-                                                          ),
-                                                          dbc.CardBody(
-                                                              [
-                                                                  html.I(className="fas fa-heart"),
-                                                                  html.H5("Recovered", className="card-title"),
-                                                                  html.H5(
-                                                                      "123,456,789",
-                                                                      className="card-title",
-                                                                  ),
-                                                              ]
-                                                          ),
-                                                      ], color="success", inverse=True)),
+                                                  #dbc.Col(dbc.Card(
+                                                  #    [
+                                                  #        dbc.CardHeader(
+                                                  #            [
+                                                  #                html.H5("United States")
+                                                  #            ]
+                                                  #        ),
+                                                  #        dbc.CardBody(
+                                                  #            [
+                                                  #                html.I(className="fas fa-notes-medical"),
+                                                  #                html.H5("Current Infections", className="card-title"),
+                                                  #                html.H5(
+                                                  #                    "123,456,789",
+                                                  #                    className="card-title",
+                                                  #                ),
+                                                  #            ]
+                                                  #        ),
+                                                  #    ], color="warning", inverse=True)),
+                                                  #dbc.Col(dbc.Card(
+                                                  #    [
+                                                  #        dbc.CardHeader(
+                                                  #           [
+                                                  #                html.H5("United States")
+                                                  #            ]
+                                                  #        ),
+                                                  #        dbc.CardBody(
+                                                  #            [
+                                                  #                html.I(className="fas fa-heart-broken"),
+                                                  #                html.H5("Deaths", className="card-title"),
+                                                  #                html.H5(
+                                                  #                    "123,456,789",
+                                                  #                    className="card-title",
+                                                  #                ),
+                                                  #            ]
+                                                  #        ),
+                                                  #    ], color="danger", inverse=True)),
+                                                  #dbc.Col(dbc.Card(
+                                                  #    [
+                                                  #        dbc.CardHeader(
+                                                  #            [
+                                                  #                html.H5("United States")
+                                                  #            ]
+                                                  #        ),
+                                                  #        dbc.CardBody(
+                                                  #            [
+                                                  #                html.I(className="fas fa-heart"),
+                                                  #                html.H5("Recovered", className="card-title"),
+                                                  #                html.H5(
+                                                  #                    "123,456,789",
+                                                  #                    className="card-title",
+                                                  #                ),
+                                                  #            ]
+                                                  #        ),
+                                                  #    ], color="success", inverse=True)),
                                               ],
                                               className="mb-4", justify="center", align="center", style={'text-align': 'center'}
                                           ),

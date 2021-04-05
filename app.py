@@ -28,10 +28,15 @@ vax_df = pd.read_csv('Vaccine_Val.csv')
 covid_pos = covid_df["polarity_positive_percent"]
 covid_neg = covid_df["polarity_negative_percent"]
 covid_neu = covid_df["polarity_neutral_percent"]
+covid_dates = covid_df["CreateDate"]
+covid_dates = covid_dates[10:]
+covid_pos = covid_pos[10:]
+covid_neg = covid_neg[10:]
 
 vax_pos = vax_df["polarity_positive_percent"]
 vax_neg = vax_df["polarity_negative_percent"]
 vax_neu = vax_df["polarity_neutral_percent"]
+vax_dates = vax_df["CreateDate"]
 
 stateDictionary = {}
 fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
@@ -86,11 +91,11 @@ def update_timeTweet(selected_pie1_value):
     fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
     fig.update_layout(xaxis_title="Days", yaxis_title='Percentage', title="Tweet", legend_title="Reaction")
     if(selected_pie1_value == 0):
-        fig.add_trace(go.Scatter(y=covid_pos, mode='lines', name='Positive'))
-        fig.add_trace(go.Scatter(y=covid_neg, mode='lines', name='Negative'))
+        fig.add_trace(go.Scatter(x=covid_dates, y=covid_pos, mode='lines', name='Positive'))
+        fig.add_trace(go.Scatter(x=covid_dates, y=covid_neg, mode='lines', name='Negative'))
     else:
-        fig.add_trace(go.Scatter(y=vax_pos, mode='lines', name='Positive'))
-        fig.add_trace(go.Scatter(y=vax_neg, mode='lines', name='Negative'))
+        fig.add_trace(go.Scatter(x=vax_dates, y=vax_pos, mode='lines', name='Positive'))
+        fig.add_trace(go.Scatter(x=vax_dates, y=vax_neg, mode='lines', name='Negative'))
     #fig.add_trace(go.Scatter(y=covid_neu, mode='lines', name='Neutral'))
     if (5==5):
         return html.Div(

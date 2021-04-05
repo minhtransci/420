@@ -38,7 +38,7 @@ fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
 
 FONT_AWESOME = "https://use.fontawesome.com/releases/v5.7.2/css/all.css"
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, FONT_AWESOME])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, FONT_AWESOME])
 server = app.server
 
 card_content = [

@@ -201,13 +201,13 @@ def update_predictPlot(predict_value):
         yValsC.append(x[1])
         yValsH.append(x[2])
     figP.add_trace(
-        go.Scatter(x=xVals,y=yVals, name="Daily Predicted values for Infections"),
+        go.Scatter(x=xVals,y=yVals, name="Daily Predicted Infections"),
     )
     figC.add_trace(
-        go.Scatter(x=xVals,y=yValsC, name="Cumulative Predicted values for Deaths"),
+        go.Scatter(x=xVals,y=yValsC, name="Cumulative Predicted Deaths"),
     )
     figH.add_trace(
-        go.Scatter(x=xVals,y=yValsH, name="Daily Predicted values for Hospitalizations"),
+        go.Scatter(x=xVals,y=yValsH, name="Daily Predicted Hospitalizations"),
     )
     ###
     r1 = requests.get('https://minhtransci.github.io/sample.json')

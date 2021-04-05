@@ -55,11 +55,11 @@ card_content = [
 ]
 
 app.layout = html.Div([
-    dcc.Tabs(id="tabs-styled-with-inline", value='tab-1', children=[
-        dcc.Tab(label='Tab 3', value='tab-3'),
-        dcc.Tab(label='Tab 4', value='tab-4'),
-        dcc.Tab(label='Tab 5', value='tab-5'),
-        dcc.Tab(label='Tab 6', value='tab-6'),
+    dcc.Tabs(id="tabs-styled-with-inline", value='tab-6', children=[
+        dcc.Tab(label='Compare States', value='tab-3'),
+        dcc.Tab(label='Twitter Sentiment', value='tab-4'),
+        dcc.Tab(label='State Level', value='tab-5'),
+        dcc.Tab(label='Forecasting', value='tab-6'),
     ], ),
     html.Div(id='tabs-content-inline')
 ])

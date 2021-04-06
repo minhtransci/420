@@ -201,10 +201,11 @@ def update_predictPlot(predict_value):
         yValsC.append(x[1])
         yValsH.append(x[2])
     figP.add_trace(
-        go.Scatter(x=xVals,y=yVals, name="Daily Predicted Infections"),
+        go.Scatter(x=xVals,y=yVals, name="Cumulative Predicted Deaths"),
     )
     figC.add_trace(
-        go.Scatter(x=xVals,y=yValsC, name="Cumulative Predicted Deaths"),
+        go.Scatter(x=xVals,y=yValsC, name="Daily Predicted Infections"),
+
     )
     figH.add_trace(
         go.Scatter(x=xVals,y=yValsH, name="Daily Predicted Hospitalizations"),
@@ -738,7 +739,7 @@ def render_content(tab):
                                                        dcc.Dropdown(
                                                            id='PredictPick',
                                                            options=[
-                                                               {'label': 'predictedCase', 'value': 'predictedCases'},
+                                                               {'label': 'predictedInfections', 'value': 'predictedCases'},
                                                                {'label': 'predictedDeaths', 'value': 'predictedDeaths'},
                                                                {'label': 'predictedHospitlization', 'value': 'predictedHospitlization'},
                                                            ],

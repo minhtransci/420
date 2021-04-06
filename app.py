@@ -732,7 +732,7 @@ def render_content(tab):
                                               className="logo", src=app.get_asset_url("dash-logo-new.png")
                                           ),
                                           html.H2('Dash - Updated Covid Data'),
-                                          html.P('''Compare and Pick the States'''),
+                                          html.P('The SEIR mathematical model predicts data for parameters related to the COVID-19 virus. In the graphs displayed, predictive data for the Infections, Deaths, and Hospitalized due to the virus are shown. Recently, the model has been adjusted to account for the rapid distribution of the COVID-19 vaccine beginning in late January/Early February. This has affected the late-stage accuracy of the model, as the vaccine has proven to be more effective than predicted in the US population.'),
                                           html.P('Covid Measurement Metrics to compare'),
                                           html.Div(className='div-for-dropdown',
                                                    children=[

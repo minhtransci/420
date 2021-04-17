@@ -475,10 +475,10 @@ def MultiStepPlot(state, plotPick):
                             dbc.CardBody(
                                 [
                                     html.I(className="fas fa-notes-medical"),
-                                    html.H5("Daily Infection, Weekly Average", className="card-title"),
-                                    html.H5("Change: " + caseChangeString, className="card-title", ),
-                                    html.H5("Current: " + str(round(caseGG)), className="card-title", ),
-                                    html.H5("Last Week: "+str(round(caseHH)), className="card-title", ),
+                                    html.H4("Daily Infection, Weekly Average", className="card-title"),
+                                    html.H4("Change: " + caseChangeString, className="card-title", ),
+                                    html.H4("Current: " + str(round(caseGG)), className="card-title", ),
+                                    html.H4("Last Week: "+str(round(caseHH)), className="card-title", ),
                                 ]
                             ),
                         ], color="warning", inverse=True)),
@@ -492,10 +492,10 @@ def MultiStepPlot(state, plotPick):
                             dbc.CardBody(
                                 [
                                     html.I(className="fas fa-heart-broken"),
-                                    html.H5("Daily Deaths, Weekly Average", className="card-title"),
-                                    html.H5("Change: " + deathChangeString, className="card-title", ),
-                                    html.H5("Current: " + str(round(deathGG)), className="card-title", ),
-                                    html.H5("Last Week: "+str(round(deathHH)), className="card-title", ),
+                                    html.H4("Daily Deaths, Weekly Average", className="card-title"),
+                                    html.H4("Change: " + deathChangeString, className="card-title", ),
+                                    html.H4("Current: " + str(round(deathGG)), className="card-title", ),
+                                    html.H4("Last Week: "+str(round(deathHH)), className="card-title", ),
                                 ]
                             ),
                         ], color="danger", inverse=True)),
@@ -509,10 +509,10 @@ def MultiStepPlot(state, plotPick):
                             dbc.CardBody(
                                 [
                                     html.I(className="fas fa-heart"),
-                                    html.H5("Daily Vaccinations, Weekly Average", className="card-title"),
-                                    html.H5("Change: " + vacChangeString, className="card-title", ),
-                                    html.H5("Current: " + str(round(vacGG)), className="card-title", ),
-                                    html.H5("Last Week: "+str(round(vacHH)), className="card-title", ),
+                                    html.H4("Daily Vaccinations, Weekly Average", className="card-title"),
+                                    html.H4("Change: " + vacChangeString, className="card-title", ),
+                                    html.H4("Current: " + str(round(vacGG)), className="card-title", ),
+                                    html.H4("Last Week: "+str(round(vacHH)), className="card-title", ),
                                 ]
                             ),
                         ], color="success", inverse=True)),

@@ -390,18 +390,43 @@ def MultiStepPlot(state, plotPick):
         figPlot = fig14
 
     vac1 = yOne[-2]
+    if vac1 == None:
+        vac1 = yOne[-3]
     vac2 = yOne[-8]
+    if vac2 == None:
+        vac2 = yOne[-7]
     vac3 = yOne[-9]
+    if vac3 == None:
+        vac3 = yOne[-10]
     vac4 = yOne[-15]
+    if vac4 == None:
+        vac4 = yOne[-16]
 
     death1 = stateDictionary[state + '-deaths'][-2]
     death2 = stateDictionary[state + '-deaths'][-8]
     death3 = stateDictionary[state + '-deaths'][-9]
     death4 = stateDictionary[state + '-deaths'][-15]
+    if death1 == None:
+        death1 = stateDictionary[state + '-deaths'][-3]
+    if death2 == None:
+        death2 = stateDictionary[state + '-deaths'][-7]
+    if death3 == None:
+        death3 = stateDictionary[state + '-deaths'][-10]
+    if death4 == None:
+        death4 = stateDictionary[state + '-deaths'][-16]
 
+    sumHH = 0
+    for i in stateDictionary[state + '-newCases'][-15:-8]:
+        if i != None:
+            sumHH = sumHH + i
 
-    caseGG=sum(stateDictionary[state+'-newCases'][-8:-1])/len(stateDictionary[state+'-newCases'][-8:-1])
-    caseHH =sum(stateDictionary[state + '-newCases'][-15:-8])/len(stateDictionary[state + '-newCases'][-15:-8])
+    sumGG = 0
+    for i in stateDictionary[state + '-newCases'][-8:-1]:
+        if i != None:
+            sumGG = sumGG + i
+
+    caseGG=sumGG/7
+    caseHH =sumHH/7
 
     if caseGG == caseHH:
         caseChangeString = "0%"

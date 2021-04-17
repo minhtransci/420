@@ -90,6 +90,7 @@ def update_pieGraph(selected_pie1_value):
 def update_timeTweet(selected_pie1_value):
     fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
     fig.update_layout(xaxis_title="Days", yaxis_title='Percentage', title="Tweet", legend_title="Reaction")
+
     if(selected_pie1_value == 0):
         fig.add_trace(go.Scatter(x=covid_dates, y=covid_pos, mode='lines', name='Positive'))
         fig.add_trace(go.Scatter(x=covid_dates, y=covid_neg, mode='lines', name='Negative'))
@@ -205,7 +206,6 @@ def update_predictPlot(predict_value):
     )
     figC.add_trace(
         go.Scatter(x=xVals,y=yValsC, name="Daily Predicted Infections"),
-
     )
     figH.add_trace(
         go.Scatter(x=xVals,y=yValsH, name="Daily Predicted Hospitalizations"),
@@ -259,11 +259,12 @@ def update_predictPlot(predict_value):
         )
 
 
+
 @app.callback(Output('MultiPlots', 'children'),
               [Input('stateMultiPick', 'value'),
                Input('StatePlotPick', 'value')],)
 def MultiStepPlot(state, plotPick):
-
+    print("B:")
     fig11 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
     fig11.update_layout(xaxis_title="Date", yaxis_title='Cumulative Cases', title=state + '-cases')
     fig12 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
@@ -285,13 +286,25 @@ def MultiStepPlot(state, plotPick):
         c = b['actualsTimeseries']
         for days in c:
             date.append(days['date'])
-            numbers1.append(days['cases'])
-            numbers2.append(days['newCases'])
-            numbers3.append(days['deaths'])
+            if(days['cases'] == None):
+                numbers1.append(0)
+            else:
+                numbers1.append(days['cases'])
+
+            if (days['newCases'] == None):
+                numbers2.append(0)
+            else:
+                numbers2.append(days['newCases'])
+
+            if (days['deaths'] == None):
+                numbers3.append(0)
+            else:
+                numbers3.append(days['deaths'])
+
             if 'vaccinationsInitiated' in days:
                 numbers4.append(days['vaccinationsInitiated'])
             else:
-                numbers4.append(None)
+                numbers4.append(0)
 
         stateDictionary[state] = date
         stateDictionary[state+'-cases'] = numbers1
@@ -302,42 +315,42 @@ def MultiStepPlot(state, plotPick):
 
     new1List = stateDictionary[state + '-newCases']
 
-    mva1 = [0] * 7
-    mva2 = [0] * 7
-    var1 = 0
-    var2 = 0
-    lastReal = 0
-    lastReal7 = 0
-    for day in range(0,7):
-        if new1List[day]:
-            var1 = var1 + new1List[day]
-            lastReal = new1List[day]
-        else:
-            var1 = var1 + lastReal
-
-    for day in range(7,len(stateDictionary[state])):
-        mva1.append(var1/7.0)
-        mva2.append(var2/7.0)
-        if new1List[day]:
-            var1 = var1 + new1List[day]
-            lastReal = new1List[day]
-            if new1List[day-7]:
-                var1 = var1 - lastReal7
-                lastReal7 = new1List[day-7]
-            else:
-                var1 = var1 - lastReal7
-        else:
-            var1 = var1 + lastReal
-            if new1List[day-7]:
-                var1 = var1 - lastReal7
-                lastReal7 = new1List[day-7]
-            else:
-                var1 = var1 - lastReal7
+    # mva1 = [0] * 7
+    # mva2 = [0] * 7
+    # var1 = 0
+    # var2 = 0
+    # lastReal = 0
+    # lastReal7 = 0
+    # for day in range(0,7):
+    #     if new1List[day]:
+    #         var1 = var1 + new1List[day]
+    #         lastReal = new1List[day]
+    #     else:
+    #         var1 = var1 + lastReal
+    #
+    # for day in range(7,len(stateDictionary[state])):
+    #     mva1.append(var1/7.0)
+    #     mva2.append(var2/7.0)
+    #     if new1List[day]:
+    #         var1 = var1 + new1List[day]
+    #         lastReal = new1List[day]
+    #         if new1List[day-7]:
+    #             var1 = var1 - lastReal7
+    #             lastReal7 = new1List[day-7]
+    #         else:
+    #             var1 = var1 - lastReal7
+    #     else:
+    #         var1 = var1 + lastReal
+    #         if new1List[day-7]:
+    #             var1 = var1 - lastReal7
+    #             lastReal7 = new1List[day-7]
+    #         else:
+    #             var1 = var1 - lastReal7
 
     fig11.add_trace(go.Scatter(x=stateDictionary[state], y=stateDictionary[state + '-cases'], mode='lines', name=state))
     fig11.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     fig12.add_trace(go.Bar(x=stateDictionary[state], y=stateDictionary[state + '-newCases'], name=state+" Daily"))
-    fig12.add_trace(go.Scatter(x=stateDictionary[state], y=mva1, name=state+" 7 Day Average"))
+    #fig12.add_trace(go.Scatter(x=stateDictionary[state], y=mva1, name=state+" 7 Day Average"))
     fig12.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     fig13.add_trace(go.Scatter(x=stateDictionary[state], y=stateDictionary[state + '-deaths'], mode='lines', name=state))
     fig13.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
@@ -345,67 +358,148 @@ def MultiStepPlot(state, plotPick):
     yOne = stateDictionary[state + '-vaccinationsInitiated'][330:]
     fig14.add_trace(go.Scatter(x=xOne, y=yOne, mode='lines', name=state))
     fig14.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    fig12.update_layout(
-        updatemenus=[go.layout.Updatemenu(
-            type="buttons",
-            active=1,
-            buttons=list(
-                [dict(label='None',
-                      method='update',
-                      args=[{'visible': [True, False]},
-                            {'title': 'None',
-                             'showlegend': True}]),
-                 dict(label='LineDaily',
-                      method='update',
-                      args=[{'visible': [True, True]},
-                            # the index of True aligns with the indices of plot traces
-                            {'title': 'LineDaily',
-                             'showlegend': True}]),
-                 ])
-        )
-        ])
+    print(stateDictionary[state])
+    # fig12.update_layout(
+    #     updatemenus=[go.layout.Updatemenu(
+    #         type="buttons",
+    #         active=1,
+    #         buttons=list(
+    #             [dict(label='None',
+    #                   method='update',
+    #                   args=[{'visible': [True, False]},
+    #                         {'title': 'None',
+    #                          'showlegend': True}]),
+    #              dict(label='LineDaily',
+    #                   method='update',
+    #                   args=[{'visible': [True, True]},
+    #                         # the index of True aligns with the indices of plot traces
+    #                         {'title': 'LineDaily',
+    #                          'showlegend': True}]),
+    #              ])
+    #     )
+    #     ])
 
     print('TimeA', datetime.datetime.now() - a)
     if(plotPick == "Cases"):
-        return html.Div(
-            children=[
-                dcc.Graph(id='timeseries',
-                          config={'displayModeBar': False},
-                          figure=fig11
-                          )
-            ]
-        )
-
+        figPlot = fig11
     elif(plotPick == "NewCases"):
-        return html.Div(
-            children=[
-                dcc.Graph(id='timeseries',
-                          config={'displayModeBar': False},
-                          figure=fig12
-                          ),
-            ]
-        )
-
+        figPlot = fig12
     elif(plotPick == "Deaths"):
-        return html.Div(
-            children=[
-                dcc.Graph(id='timeseries',
-                          config={'displayModeBar': False},
-                          figure=fig13
-                          ),
-            ]
-        )
-
+        figPlot = fig13
     else:
-        return html.Div(
-            children=[
-                dcc.Graph(id='timeseries',
-                          config={'displayModeBar': False},
-                          figure=fig14
-                          ),
-            ]
-        )
+        figPlot = fig14
 
+    vac1 = yOne[-2]
+    vac2 = yOne[-8]
+    vac3 = yOne[-9]
+    vac4 = yOne[-15]
+
+    death1 = stateDictionary[state + '-deaths'][-2]
+    death2 = stateDictionary[state + '-deaths'][-8]
+    death3 = stateDictionary[state + '-deaths'][-9]
+    death4 = stateDictionary[state + '-deaths'][-15]
+
+
+    caseGG=sum(stateDictionary[state+'-newCases'][-8:-1])/len(stateDictionary[state+'-newCases'][-8:-1])
+    caseHH =sum(stateDictionary[state + '-newCases'][-15:-8])/len(stateDictionary[state + '-newCases'][-15:-8])
+
+    if caseGG == caseHH:
+        caseChangeString = "0%"
+    else:
+        caseChange = ((caseGG - caseHH) / caseHH) * 100.0
+        if caseChange > 0:
+            caseChangeString = "+"+str(round(caseChange, 2))+"%"
+        else:
+            caseChangeString = str(round(caseChange, 2)) + "%"
+
+
+    deathGG =(death1-death2)/7
+    deathHH =(death3-death4)/7
+    if deathGG == deathHH or deathGG == 0 or deathHH == 0:
+        deathChangeString = "0%"
+    else:
+        deathChange = ((deathGG - deathHH) / deathHH) * 100.0
+        if deathChange > 0:
+            deathChangeString = "+"+str(round(deathChange, 2))+"%"
+        else:
+            deathChangeString = str(round(deathChange, 2)) + "%"
+
+    vacGG =(vac1-vac2)/7
+    vacHH =(vac3-vac4)/7
+
+    if vacGG == vacHH:
+        vacChangeString = "0%"
+    else:
+        vacChange = ((vacGG - vacHH) / vacHH) * 100.0
+        if vacChange > 0:
+            vacChangeString = "+"+str(round(vacChange, 2))+"%"
+        else:
+            vacChangeString = str(round(vacChange, 2)) + "%"
+
+    return html.Div(
+        children=[
+            dbc.Row(
+                [
+                    dbc.Col(dbc.Card(
+                        [
+                            dbc.CardHeader(
+                                [
+                                    html.H5(state)
+                                ]
+                            ),
+                            dbc.CardBody(
+                                [
+                                    html.I(className="fas fa-notes-medical"),
+                                    html.H5("Daily Infection, Weekly Average", className="card-title"),
+                                    html.H5("Change: " + caseChangeString, className="card-title", ),
+                                    html.H5("Current: " + str(round(caseGG)), className="card-title", ),
+                                    html.H5("Last Week: "+str(round(caseHH)), className="card-title", ),
+                                ]
+                            ),
+                        ], color="warning", inverse=True)),
+                    dbc.Col(dbc.Card(
+                        [
+                            dbc.CardHeader(
+                                [
+                                    html.H5(state)
+                                ]
+                            ),
+                            dbc.CardBody(
+                                [
+                                    html.I(className="fas fa-heart-broken"),
+                                    html.H5("Daily Deaths, Weekly Average", className="card-title"),
+                                    html.H5("Change: " + deathChangeString, className="card-title", ),
+                                    html.H5("Current: " + str(round(deathGG)), className="card-title", ),
+                                    html.H5("Last Week: "+str(round(deathHH)), className="card-title", ),
+                                ]
+                            ),
+                        ], color="danger", inverse=True)),
+                    dbc.Col(dbc.Card(
+                        [
+                            dbc.CardHeader(
+                                [
+                                    html.H5(state)
+                                ]
+                            ),
+                            dbc.CardBody(
+                                [
+                                    html.I(className="fas fa-heart"),
+                                    html.H5("Daily Vaccinations, Weekly Average", className="card-title"),
+                                    html.H5("Change: " + vacChangeString, className="card-title", ),
+                                    html.H5("Current: " + str(round(vacGG)), className="card-title", ),
+                                    html.H5("Last Week: "+str(round(vacHH)), className="card-title", ),
+                                ]
+                            ),
+                        ], color="success", inverse=True)),
+                ],
+                className="mb-4", justify="center", align="center", style={'text-align': 'center'}
+            ),
+            dcc.Graph(id='timeseries',
+                      config={'displayModeBar': False},
+                      figure=figPlot
+                      )
+        ]
+    )
 
 
 @app.callback(Output('tabs-content-inline', 'children'),
@@ -654,69 +748,10 @@ def render_content(tab):
 
                              html.Div(className='eight columns div-for-charts bg-grey',
                                       children=[
-                                          dbc.Row(
-                                              [
-                                                  # dbc.Col(dbc.Card(
-                                                  #     [
-                                                  #         dbc.CardHeader(
-                                                  #             [
-                                                  #                 html.H5("United States")
-                                                  #             ]
-                                                  #         ),
-                                                  #         dbc.CardBody(
-                                                  #             [
-                                                  #                 html.I(className="fas fa-notes-medical"),
-                                                  #                 html.H5("Current Infections", className="card-title"),
-                                                  #                 html.H5(
-                                                  #                     "123,456,789",
-                                                  #                     className="card-title",
-                                                  #                 ),
-                                                  #             ]
-                                                  #         ),
-                                                  #     ], color="warning", inverse=True)),
-                                                  # dbc.Col(dbc.Card(
-                                                  #     [
-                                                  #         dbc.CardHeader(
-                                                  #             [
-                                                  #                 html.H5("United States")
-                                                  #             ]
-                                                  #         ),
-                                                  #         dbc.CardBody(
-                                                  #             [
-                                                  #                 html.I(className="fas fa-heart-broken"),
-                                                  #                 html.H5("Deaths", className="card-title"),
-                                                  #                 html.H5(
-                                                  #                     "123,456,789",
-                                                  #                     className="card-title",
-                                                  #                 ),
-                                                  #             ]
-                                                  #         ),
-                                                  #     ], color="danger", inverse=True)),
-                                                  # dbc.Col(dbc.Card(
-                                                  #     [
-                                                  #         dbc.CardHeader(
-                                                  #             [
-                                                  #                 html.H5("United States")
-                                                  #             ]
-                                                  #         ),
-                                                  #         dbc.CardBody(
-                                                  #             [
-                                                  #                 html.I(className="fas fa-heart"),
-                                                  #                 html.H5("Recovered", className="card-title"),
-                                                  #                 html.H5(
-                                                  #                     "123,456,789",
-                                                  #                     className="card-title",
-                                                  #                 ),
-                                                  #             ]
-                                                  #         ),
-                                                  #     ], color="success", inverse=True)),
-                                              ],
-                                              className="mb-4", justify="center", align="center", style={'text-align': 'center'}
-                                          ),
                                           dcc.Loading(
                                           html.Div(id='MultiPlots',
                                                    )
-                                          )
+                                          ),
                                             ])
                          ])
             ]
@@ -733,7 +768,6 @@ def render_content(tab):
                                           ),
                                           html.H2('Dash - Covid Model Forecasting'),
                                           html.P('The SEIR mathematical model predicts data for parameters related to the COVID-19 virus. In the graphs displayed, predictive data for the Infections, Deaths, and Hospitalized due to the virus are shown. Recently, the model has been adjusted to account for the rapid distribution of the COVID-19 vaccine beginning in late January/Early February. This has affected the late-stage accuracy of the model, as the vaccine has proven to be more effective than predicted in the US population.'),
-                                          html.P('Covid Measurement Metrics to compare'),
                                           html.Div(className='div-for-dropdown',
                                                    children=[
                                                        dcc.Dropdown(
@@ -766,4 +800,5 @@ def render_content(tab):
 
 
 if __name__ == '__main__':
+
     app.run_server(debug=True)

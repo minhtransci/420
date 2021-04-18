@@ -138,7 +138,26 @@ def update_statePlot(state_value, type_value):
     global aTime
     a = datetime.datetime.now()
     fig6 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
-    fig6.update_layout(xaxis_title="Days", yaxis_title='Count', title=type_value, legend_title="States")
+    if type_value == "newCases":
+        titleVal = "Daily Cases"
+        paraVal = "The daily reporting of new cases from each states. Data collected from Covid Act Now"
+    elif type_value == "deaths":
+        titleVal = "Cumulative Deaths"
+        paraVal = "The cumulative reporting of deaths from each state. Data collected from Covid Act Now"
+    elif type_value == "vaccinationsInitiated":
+        titleVal = "Cumulative Vaccinations"
+        paraVal = "The cumulative reporting of vaccinations done from each state. Data gap is from non reporting days. Data collected from Covid Act Now"
+    elif type_value == "newCasesPC":
+        titleVal = "Daily New Cases Per 100k people"
+        paraVal = "The daily reporting of new cases from each states per 100,000 people. Data collected from Covid Act Now and United States Census Bureau"
+    elif type_value == "deathsPC":
+        titleVal = "Cumulative Deaths Per 100k people"
+        paraVal = "The cumulative reporting of deaths from each state per 100,000 people. Data collected from Covid Act Now and United States Census Bureau"
+    else:
+        titleVal = "Cumulative Vaccinations Per 100k people"
+        paraVal = "The cumulative reporting of vaccinations done from each state. Data gap is from non reporting days. Data collected from Covid Act Now and United States Census Bureau"
+
+    fig6.update_layout(xaxis_title="Days", yaxis_title='Count', title=titleVal, legend_title="States")
     for j in range(len(state_value)):
         if state_value[j] not in stateDictionary:
             r = requests.get('https://api.covidactnow.org/v2/state/' + state_value[j] + '.timeseries.json?apiKey=8e215af157c74e9fbf1d77e7e982e23d')
@@ -207,7 +226,7 @@ def update_statePlot(state_value, type_value):
                 dcc.Graph(id='timeseries',
                           figure=fig6
                           ),
-                html.P('Covid Measurement Metrics to compare1'),
+                html.P(paraVal),
             ]
         )
 

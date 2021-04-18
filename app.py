@@ -46,6 +46,15 @@ FONT_AWESOME = "https://use.fontawesome.com/releases/v5.7.2/css/all.css"
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, FONT_AWESOME])
 server = app.server
 
+statesPC = {'CA':0.002540129,'TX':0.003405907,'FL':0.004601232,'NY':0.005171493,'PA':0.007822734,'IL':0.00794437,
+            'OH':0.008551966,'GA':0.009337053,'NC':0.00943323,'MI':0.010033557,'NJ':0.011258255,'GA':0.011640681,
+            'WA':0.012997796,'AZ':0.013474545,'MA':0.014506263,'TN':0.01452046,'IN':0.014803952,'MO':0.016256071,
+            'MD':0.016513089,'WI':0.017144851,'CO':0.017218464,'MN':0.017676145,'SC':0.019164284,'AL':0.020318876,
+            'LA':0.021527052,'KY':0.022335134,'OR':0.023576526,'OK':0.025120686,'CT':0.028113531,'UT':0.030770376,'IA':0.031609948,
+            'NV':0.031864801,'AR':0.032997616,'MS':0.033706509,'KS':0.034319387,'NM':0.04747619,'NE':0.051611518,'ID':0.054737144,
+            'WV':0.056029095,'HI':0.071072902,'NH':0.073191707,'ME':0.074066338,'MT':0.092543151,'RI':0.094596193,
+            'DE':0.101336733,'SD':0.112017582,'ND':0.130666175,'AK':0.136769344,'VT':0.16042429,'WY':0.171724526}
+
 card_content = [
     dbc.CardHeader("Card header"),
     dbc.CardBody(
@@ -104,7 +113,7 @@ def update_timeTweet(selected_pie1_value):
                 dcc.Graph(id='timeseries',
                           figure=fig
                           ),
-                html.P('.'),
+                html.P('Covid Measurement Metrics to compare1'),
             ]
         )
 
@@ -148,7 +157,7 @@ def update_statePlot(state_value, type_value):
                 if 'vaccinationsInitiated' in dateS:
                     numbers3.append(dateS['vaccinationsInitiated'])
                 else:
-                    numbers3.append(None)
+                    numbers3.append(0)
 
 
             stateDictionary[state_value[j]] = date
@@ -157,8 +166,39 @@ def update_statePlot(state_value, type_value):
             stateDictionary[state_value[j] + '-deaths'] = numbers2
             stateDictionary[state_value[j] + '-vaccinationsInitiated'] = numbers3
 
+        if state_value[j]+'-casesPC' not in stateDictionary:
+            blankList1 = []
+            for i in stateDictionary[state_value[j] + '-newCases']:
+                if i != None:
+                    blankList1.append(round(i*statesPC[state_value[j]],2))
+                else:
+                    blankList1.append(None)
+            stateDictionary[state_value[j]+'-newCasesPC'] = blankList1
 
-        fig6.add_trace(go.Scatter(x=stateDictionary[state_value[j]], y=stateDictionary[state_value[j] + '-' + type_value], mode='lines', name=state_value[j]))
+            blankList2 = []
+            for i in stateDictionary[state_value[j] + '-deaths']:
+                if i != None:
+                    blankList2.append(round(i*statesPC[state_value[j]],2))
+                else:
+                    blankList2.append(None)
+            stateDictionary[state_value[j]+'-deathsPC'] = blankList2
+
+            blankList3 = []
+            for i in stateDictionary[state_value[j] + '-vaccinationsInitiated']:
+                if i != None:
+                    blankList3.append(round(i*statesPC[state_value[j]],2))
+                else:
+                    blankList3.append(None)
+            stateDictionary[state_value[j]+'-vaccinationsInitiatedPC'] = blankList3
+
+        #vaccinationsInitiated
+        if type_value == 'vaccinationsInitiated':
+            fig6.add_trace(go.Scatter(x=stateDictionary[state_value[j]],y=stateDictionary[state_value[j] + '-' + type_value][330:],mode='lines', name=state_value[j]))
+        elif type_value == 'vaccinationsInitiatedPC':
+            fig6.add_trace(go.Scatter(x=stateDictionary[state_value[j]],y=stateDictionary[state_value[j] + '-' + type_value][330:], mode='lines',name=state_value[j]))
+        else:
+            fig6.add_trace(go.Scatter(x=stateDictionary[state_value[j]], y=stateDictionary[state_value[j] + '-' + type_value], mode='lines', name=state_value[j]))
+
     fig6.update_layout(showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     print(datetime.datetime.now() - a)
     if (5==5):
@@ -167,7 +207,7 @@ def update_statePlot(state_value, type_value):
                 dcc.Graph(id='timeseries',
                           figure=fig6
                           ),
-                html.P('.'),
+                html.P('Covid Measurement Metrics to compare1'),
             ]
         )
 
@@ -286,20 +326,11 @@ def MultiStepPlot(state, plotPick):
         c = b['actualsTimeseries']
         for days in c:
             date.append(days['date'])
-            if(days['cases'] == None):
-                numbers1.append(0)
-            else:
-                numbers1.append(days['cases'])
+            numbers1.append(days['cases'])
 
-            if (days['newCases'] == None):
-                numbers2.append(0)
-            else:
-                numbers2.append(days['newCases'])
+            numbers2.append(days['newCases'])
 
-            if (days['deaths'] == None):
-                numbers3.append(0)
-            else:
-                numbers3.append(days['deaths'])
+            numbers3.append(days['deaths'])
 
             if 'vaccinationsInitiated' in days:
                 numbers4.append(days['vaccinationsInitiated'])
@@ -475,10 +506,10 @@ def MultiStepPlot(state, plotPick):
                             dbc.CardBody(
                                 [
                                     html.I(className="fas fa-notes-medical"),
-                                    html.H4("Daily Infection, Weekly Average", className="card-title"),
-                                    html.H4("Change: " + caseChangeString, className="card-title", ),
-                                    html.H4("Current: " + str(round(caseGG)), className="card-title", ),
-                                    html.H4("Last Week: "+str(round(caseHH)), className="card-title", ),
+                                    html.H6("Daily Infection, Weekly Average", className="card-title"),
+                                    html.H6("Change: " + caseChangeString, className="card-title", ),
+                                    html.H6("Current: " + str(round(caseGG)), className="card-title", ),
+                                    html.H6("Last Week: "+str(round(caseHH)), className="card-title", ),
                                 ]
                             ),
                         ], color="warning", inverse=True)),
@@ -492,10 +523,10 @@ def MultiStepPlot(state, plotPick):
                             dbc.CardBody(
                                 [
                                     html.I(className="fas fa-heart-broken"),
-                                    html.H4("Daily Deaths, Weekly Average", className="card-title"),
-                                    html.H4("Change: " + deathChangeString, className="card-title", ),
-                                    html.H4("Current: " + str(round(deathGG)), className="card-title", ),
-                                    html.H4("Last Week: "+str(round(deathHH)), className="card-title", ),
+                                    html.H6("Daily Deaths, Weekly Average", className="card-title"),
+                                    html.H6("Change: " + deathChangeString, className="card-title", ),
+                                    html.H6("Current: " + str(round(deathGG)), className="card-title", ),
+                                    html.H6("Last Week: "+str(round(deathHH)), className="card-title", ),
                                 ]
                             ),
                         ], color="danger", inverse=True)),
@@ -509,10 +540,10 @@ def MultiStepPlot(state, plotPick):
                             dbc.CardBody(
                                 [
                                     html.I(className="fas fa-heart"),
-                                    html.H4("Daily Vaccinations, Weekly Average", className="card-title"),
-                                    html.H4("Change: " + vacChangeString, className="card-title", ),
-                                    html.H4("Current: " + str(round(vacGG)), className="card-title", ),
-                                    html.H4("Last Week: "+str(round(vacHH)), className="card-title", ),
+                                    html.H6("Daily Vaccinations, Weekly Average", className="card-title"),
+                                    html.H6("Change: " + vacChangeString, className="card-title", ),
+                                    html.H6("Current: " + str(round(vacGG)), className="card-title", ),
+                                    html.H6("Last Week: "+str(round(vacHH)), className="card-title", ),
                                 ]
                             ),
                         ], color="success", inverse=True)),
@@ -652,6 +683,9 @@ def render_content(tab):
                                                                {'label': 'newCases', 'value': 'newCases'},
                                                                {'label': 'deaths', 'value': 'deaths'},
                                                                {'label': 'vaccinationsInitiated', 'value': 'vaccinationsInitiated'},
+                                                               {'label': 'newCases Per Capita', 'value': 'newCasesPC'},
+                                                               {'label': 'deaths Per Capita', 'value': 'deathsPC'},
+                                                               {'label': 'vaccinationsInitiated Per Capita','value': 'vaccinationsInitiatedPC'},
 
                                                            ],
                                                            value='newCases',
@@ -825,5 +859,4 @@ def render_content(tab):
 
 
 if __name__ == '__main__':
-
     app.run_server(debug=True)

@@ -323,7 +323,14 @@ def update_predictPlot(predict_value):
               [Input('stateMultiPick', 'value'),
                Input('StatePlotPick', 'value')],)
 def MultiStepPlot(state, plotPick):
-    print("B:")
+    if plotPick == "Cases":
+        paraVal = "The cumulative cases for the state. Data collected from Covid Act Now"
+    elif plotPick == "NewCases":
+        paraVal = "The daily reporting of new cases for the state. Data collected from Covid Act Now"
+    elif plotPick == "Deaths":
+        paraVal = "The cumulative reporting of deaths for the state. Data collected from Covid Act Now"
+    else:
+        paraVal = "The cumulative reporting of vaccinations done from each state. Data gap is from non reporting days. Data collected from Covid Act Now"
     fig11 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
     fig11.update_layout(xaxis_title="Date", yaxis_title='Cumulative Cases', title=state + '-cases')
     fig12 = go.Figure(layout={'paper_bgcolor': 'rgb(233,233,233)'})
@@ -573,7 +580,7 @@ def MultiStepPlot(state, plotPick):
                       config={'displayModeBar': False},
                       figure=figPlot
                       ),
-            html.P('The model estimates the total number of hospitalizations in the US population from the COVID-19 virus. Daily values are calculated using modeled infections and a hospitalization multiplier.'),
+            html.P(paraVal),
         ]
     )
 

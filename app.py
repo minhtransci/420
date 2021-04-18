@@ -113,7 +113,7 @@ def update_timeTweet(selected_pie1_value):
                 dcc.Graph(id='timeseries',
                           figure=fig
                           ),
-                html.P('Covid Measurement Metrics to compare1'),
+                html.P('The percentage of tweets that get categorized as Positive or Negative for the day, the positive and negative value does not sum up to 100%, because the rest of the tweets get categorized as neutral.'),
             ]
         )
 

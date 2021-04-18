@@ -572,7 +572,8 @@ def MultiStepPlot(state, plotPick):
             dcc.Graph(id='timeseries',
                       config={'displayModeBar': False},
                       figure=figPlot
-                      )
+                      ),
+            html.P('The model estimates the total number of hospitalizations in the US population from the COVID-19 virus. Daily values are calculated using modeled infections and a hospitalization multiplier.'),
         ]
     )
 

@@ -680,12 +680,12 @@ def render_content(tab):
                                                        dcc.Dropdown(
                                                            id='PlotPick',
                                                            options=[
-                                                               {'label': 'newCases', 'value': 'newCases'},
-                                                               {'label': 'deaths', 'value': 'deaths'},
-                                                               {'label': 'vaccinationsInitiated', 'value': 'vaccinationsInitiated'},
-                                                               {'label': 'newCases Per Capita', 'value': 'newCasesPC'},
-                                                               {'label': 'deaths Per Capita', 'value': 'deathsPC'},
-                                                               {'label': 'vaccinationsInitiated Per Capita','value': 'vaccinationsInitiatedPC'},
+                                                               {'label': 'Daily Cases', 'value': 'newCases'},
+                                                               {'label': 'Cumulative Deaths', 'value': 'deaths'},
+                                                               {'label': 'Cumulative Vaccinations', 'value': 'vaccinationsInitiated'},
+                                                               {'label': 'Daily Cases Per Capita', 'value': 'newCasesPC'},
+                                                               {'label': 'Cumulative Deaths Per Capita', 'value': 'deathsPC'},
+                                                               {'label': 'Cumulative Vaccinations Per Capita','value': 'vaccinationsInitiatedPC'},
 
                                                            ],
                                                            value='newCases',

@@ -281,7 +281,7 @@ def update_predictPlot(predict_value):
     del xValTotal[-1]
     del yValTotal[-1]
     figP.add_trace(
-        go.Scatter(x=xValTotal, y=yValTotal, name="Daily Actual Deaths")
+        go.Scatter(x=xValTotal, y=yValTotal, name="Cumulative Actual Deaths")
     )
     figC.update_layout(xaxis_title="Date", yaxis_title='Daily Infections Count from COVID-19', title='Forecasted Number of COVID-19 Infections in the US', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     figP.update_layout(xaxis_title="Date", yaxis_title='Cumulative Deaths Count from COVID-19', title='Forecasted Number of Deaths from COVID-19 in the US', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))

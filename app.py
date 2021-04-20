@@ -98,7 +98,11 @@ def update_pieGraph(selected_pie1_value):
               [Input('pieSelector1', 'value')])
 def update_timeTweet(selected_pie1_value):
     fig = go.Figure(layout={'paper_bgcolor':'rgb(233,233,233)'})
-    fig.update_layout(xaxis_title="Days", yaxis_title='Percentage', title="Tweet", legend_title="Reaction")
+    if selected_pie1_value == 1:
+        titleV = "Vaccine Twitter Sentiment"
+    else:
+        titleV = "Covid Twitter Sentiment"
+    fig.update_layout(xaxis_title="Dates", yaxis_title='Percentage', title=titleV, legend_title="Reaction")
 
     if(selected_pie1_value == 0):
         fig.add_trace(go.Scatter(x=covid_dates, y=covid_pos, mode='lines', name='Positive'))

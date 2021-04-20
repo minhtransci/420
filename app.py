@@ -283,9 +283,9 @@ def update_predictPlot(predict_value):
     figP.add_trace(
         go.Scatter(x=xValTotal, y=yValTotal, name="Daily Actual Deaths")
     )
-    figC.update_layout(xaxis_title="Date", yaxis_title='Daily Infections Count from COVID-19', title='Modeled COVID-19 Infections in the United States Over Time', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    figP.update_layout(xaxis_title="Date", yaxis_title='Cumulative Deaths Count from COVID-19', title='Modeled Deaths from COVID-19 in the United States Over Time', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    figH.update_layout(xaxis_title="Date", yaxis_title='Daily Hospitalizations Count from COVID-19', title='Modeled Hospitalizations due to COVID-19 in the United States Over Time', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figC.update_layout(xaxis_title="Date", yaxis_title='Daily Infections Count from COVID-19', title='Forecasted Number of COVID-19 Infections in the US', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figP.update_layout(xaxis_title="Date", yaxis_title='Cumulative Deaths Count from COVID-19', title='Forecasted Number of Deaths from COVID-19 in the US', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figH.update_layout(xaxis_title="Date", yaxis_title='Daily Hospitalizations Count from COVID-19', title='Forecasted Number of Hospitalizations due to COVID-19 in the US', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     if(predict_value == "predictedCases"):
         return html.Div(
             children=[
@@ -859,9 +859,9 @@ def render_content(tab):
                                                        dcc.Dropdown(
                                                            id='PredictPick',
                                                            options=[
-                                                               {'label': 'predictedInfections', 'value': 'predictedCases'},
-                                                               {'label': 'predictedDeaths', 'value': 'predictedDeaths'},
-                                                               {'label': 'predictedHospitlization', 'value': 'predictedHospitlization'},
+                                                               {'label': 'Forecasted Infections (past and upcoming 2 weeks)', 'value': 'predictedCases'},
+                                                               {'label': 'Forecasted Deaths (past and upcoming 2 weeks)', 'value': 'predictedDeaths'},
+                                                               {'label': 'Forecasted Hospitlization (past and upcoming 2 weeks)', 'value': 'predictedHospitlization'},
                                                            ],
                                                            value='predictedCases',
                                                            searchable=False,

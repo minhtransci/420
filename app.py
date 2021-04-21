@@ -259,13 +259,13 @@ def update_predictPlot(predict_value):
     yValsH = []
     yValsSum = 0
     for x in myresult:
-        yValsSum = yValsSum + x[3]
+        yValsSum = x[3]
         xVals.append(x[0])
         yVals.append(yValsSum)
         yValsC.append(x[1])
         yValsH.append(x[2])
     figP.add_trace(
-        go.Scatter(x=xVals,y=yVals, name="Cumulative Predicted Deaths"),
+        go.Scatter(x=xVals,y=yVals, name="Daily Predicted Deaths"),
     )
     figC.add_trace(
         go.Scatter(x=xVals,y=yValsC, name="Daily Predicted Infections"),
@@ -285,10 +285,10 @@ def update_predictPlot(predict_value):
     del xValTotal[-1]
     del yValTotal[-1]
     figP.add_trace(
-        go.Scatter(x=xValTotal, y=yValTotal, name="Cumulative Actual Deaths")
+        go.Scatter(x=xValTotal, y=yValTotal, name="Daily Actual Deaths")
     )
     figC.update_layout(xaxis_title="Date", yaxis_title='Daily Infections Count from COVID-19', title='Forecasted Number of COVID-19 Infections in the US', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
-    figP.update_layout(xaxis_title="Date", yaxis_title='Cumulative Deaths Count from COVID-19', title='Forecasted Number of Deaths from COVID-19 in the US', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
+    figP.update_layout(xaxis_title="Date", yaxis_title='Daily Deaths Count from COVID-19', title='Forecasted Number of Deaths from COVID-19 in the US', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     figH.update_layout(xaxis_title="Date", yaxis_title='Daily Hospitalizations Count from COVID-19', title='Forecasted Number of Hospitalizations due to COVID-19 in the US', showlegend=True, xaxis=dict(rangeslider=dict(visible=True)))
     if(predict_value == "predictedCases"):
         return html.Div(
@@ -320,6 +320,7 @@ def update_predictPlot(predict_value):
                 html.P('The model estimates the total number of hospitalizations in the US population from the COVID-19 virus. Daily values are calculated using modeled infections and a hospitalization multiplier.'),
             ]
         )
+
 
 
 
